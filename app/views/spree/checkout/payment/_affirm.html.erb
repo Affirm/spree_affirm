@@ -1,0 +1,96 @@
+<script type="text/javascript" src="https://<%= payment_method.preferred_server %>/v1.1/affirm.js"></script>
+<div id="affirm_button"></div>
+<script>
+if(typeof AffirmPaymentMethods === "undefined")
+{
+    //register the click handler only once
+    AffirmPaymentMethods = {};
+    function setAffirmCheckout(checkedPaymentMethod){
+        if(AffirmPaymentMethods[checkedPaymentMethod])
+        {
+            affirm.checkout.set(AffirmPaymentMethods[checkedPaymentMethod]);
+        }
+    }
+
+    $(document).ready(function() {
+        var checkedPaymentMethod = $('div[data-hook="checkout_payment_step"] input[type="radio"]:checked').val();
+        setAffirmCheckout(checkedPaymentMethod);
+        $('div[data-hook="checkout_payment_step"] input[type="radio"]').click(function(e)
+        {
+            setAffirmCheckout($(e.target).val());
+        });
+        $('.continue').click( function(){
+            var checkedPaymentMethod = $('div[data-hook="checkout_payment_step"] input[type="radio"]:checked').val();
+            if(AffirmPaymentMethods[checkedPaymentMethod])
+            {
+                affirm.open();
+            }
+        });
+    })
+}
+
+var affirm_checkout_data = {
+    checkout_id:          "<%= @order.number %>",
+    currency:             "USD",
+    shipping_amount:      <%= @order.shipment_total * 100 %>,
+    shipping_type:        "<%= @order.shipments.first.shipping_method.name if @order.shipments %>",
+    tax_amount:           <%= @order.additional_tax_total * 100 %>,
+    misc_fee_amount:      <%= (@order.adjustment_total - @order.additional_tax_total) * 100 %>,
+    discount_code:        "<%= @order.coupon_code %>",
+
+    shipping: {
+        phone_number: "<%= @order.ship_address.phone %>",
+        name: {
+            full:  "<%= @order.ship_address.full_name %>",
+        },
+        address: {
+            line1:        "<%= @order.ship_address.address1 %>",
+            line2:        "<%= @order.ship_address.address2 %>",
+            city:         "<%= @order.ship_address.city %>",
+            state:        "<%= @order.ship_address.state_text %>",
+            country:      "<%= @order.ship_address.country.iso %>",
+            zipcode:      "<%= @order.ship_address.zipcode %>",
+        }
+    },
+
+    billing: {
+        phone_number: "<%= @order.bill_address.phone %>",
+        email: "<%= @order.email %>",
+        name: {
+            full:   "<%= @order.bill_address.full_name %>"
+        },
+        address: {
+            line1:          "<%= @order.bill_address.address1 %>",
+            line2:          "<%= @order.bill_address.address2 %>",
+            city:           "<%= @order.bill_address.city %>",
+            state:          "<%= @order.bill_address.state_text %>",
+            country:        "<%= @order.bill_address.country.iso %>",
+            zipcode:        "<%= @order.bill_address.zipcode %>",
+        }
+    },
+
+    merchant: {
+        public_api_key:           "<%= payment_method.preferred_api_key %>",
+        user_confirmation_url:    "<%= confirm_affirm_url(:payment_method_id => payment_method.id) %>",
+        user_cancel_url:          "<%= cancel_affirm_url(:payment_method_id => payment_method.id) %>",
+    },
+    config: {
+        required_billing_fields:      "name,address,email",
+    },
+    items: [
+    <% @order.line_items.each do |item| %>
+    {
+        display_name:         "<%= raw(item.variant.product.name) %>",
+        item_url:             "<%= product_url(item.product) %>",
+        <% if item.variant.images.length %>
+        item_image_url: "<%= URI.join(root_url, item.variant.images.first.attachment.url(:large)) %>",
+        <% end %>
+        qty:                  <%= item.quantity %>,
+        sku:                  "<%= item.variant.sku %>",
+        unit_price:           <%= item.price * 100 %>
+    },
+    <% end %>
+    ]
+};
+AffirmPaymentMethods["<%= payment_method.id %>"] = affirm_checkout_data;
+</script>
