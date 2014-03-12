@@ -60,17 +60,25 @@ module ActiveMerchant #:nodoc:
       end
 
       def void(charge_source, options = {})
+        puts "VOID  charge: #{charge_source.inspect}"
         set_charge(charge_source)
         commit(:post, "#{@charge_id}/void", {}, options)
       end
 
       def refund(money, charge_source, options = {})
+        puts "REFUND  amount: #{money.inspect} charge: #{charge_source.inspect}"
         post = {:amount => amount(money)}
         set_charge(charge_source)
         commit(:post, "#{@charge_id}/refund", post, options)
       end
 
       def credit(money, charge_source, options = {})
+          set_charge(charge_source)
+          return Response.new(true ,
+                       "Credited Zero amount",
+                       {},
+                       :authorization => @charge_id,
+                      ) unless money > 0
           refund(money, charge_source, options)
       end
 

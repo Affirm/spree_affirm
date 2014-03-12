@@ -24,6 +24,7 @@ if(typeof AffirmPaymentMethods === "undefined")
             if(AffirmPaymentMethods[checkedPaymentMethod])
             {
                 affirm.open();
+                return false;
             }
         });
     })

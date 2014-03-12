@@ -1,1 +1,12 @@
-<%= render "spree/admin/payments/source_views/gateway", payment: payment %>
+<fieldset data-hook="credit_card">
+  <legend align="center">Affirm Payment</legend>
+
+  <div class="row">
+      <div class="alpha six columns">
+        <dl>
+            <dt>Charge Id:</dt>
+            <dd><%= payment.response_code %></dd>
+         </dl>
+    </div>
+  </div>
+</fieldset>
