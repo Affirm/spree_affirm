@@ -23,7 +23,7 @@ if(typeof AffirmPaymentMethods === "undefined")
             var checkedPaymentMethod = $('div[data-hook="checkout_payment_step"] input[type="radio"]:checked').val();
             if(AffirmPaymentMethods[checkedPaymentMethod])
             {
-                affirm.open();
+                affirm.checkout.open();
                 return false;
             }
         });
