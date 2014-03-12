@@ -12,13 +12,12 @@ module ActiveMerchant #:nodoc:
           super
       end
 
-      def set_charge(source_or_charge)
-          @charge_id = (source_or_charge.is_a? String) ? source_or_charge : source_or_charge.charge_id
+      def set_charge(charge_id)
+          @charge_id = charge_id
       end
 
       def authorize(money, affirm_source, options = {})
-        set_charge(affirm_source)
-        result = commit(:get, "#{@charge_id}", nil, options)
+        result = commit(:post, "", {"charge_token"=>affirm_source.charge_token}, options, true)
         puts "comparing #{result.params["amount"]} against #{money} cents: #{amount(money)}"
         if amount(money).to_i != result.params["amount"].to_i
           return Response.new(false,
@@ -43,7 +42,9 @@ module ActiveMerchant #:nodoc:
       #
       #   purchase(money, nil, { :customer => id, ... })
       def purchase(money, affirm_source, options = {})
-          capture(money, affirm_source, options)
+          result = authorize(money, affirm_source, options)
+          return result unless result.success?
+          capture(money, @charge_id, options)
       end
 
       def capture(money, charge_source, options = {})
@@ -121,7 +122,7 @@ module ActiveMerchant #:nodoc:
         }
       end
 
-      def commit(method, url, parameters=nil, options = {})
+      def commit(method, url, parameters=nil, options = {}, ret_charge=false)
           raw_response = response = nil
           success = false
           begin
@@ -129,7 +130,7 @@ module ActiveMerchant #:nodoc:
               puts "headers are #{headers.inspect}"
               raw_response = ssl_request(method, root_url + url, post_data(parameters), headers)
               response = parse(raw_response)
-              success = !response.key?("status_code")
+              success = !response.key?("status_code") && (!ret_charge || response.key?("id"))
           rescue ResponseError => e
               raw_response = e.response.body
               response = response_error(raw_response)
@@ -138,6 +139,9 @@ module ActiveMerchant #:nodoc:
           end
 
           puts "Affirm response is #{response.inspect}"
+          if success && ret_charge
+              @charge_id = response["id"]
+          end
           Response.new(success,
                        success ? "Transaction approved" : response["message"],
                        response,

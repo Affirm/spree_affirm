@@ -5,7 +5,7 @@ module Spree
 
     def confirm
       order = current_order || raise(ActiveRecord::RecordNotFound)
-      if !params[:charge_id]
+      if !params[:charge_token]
         flash[:notice] = "Invalid order confirmation data."
         return redirect_to checkout_state_path(current_order.state)
       end
@@ -15,15 +15,16 @@ module Spree
       end
       affirm_payment = order.payments.create!({
         :amount => order.total,
-        :payment_method => payment_method,
-        :response_code => params[:charge_id]
+        :payment_method => payment_method
       })
+      charge_token = params[:charge_token]
       #dangerous... but this seems the least intrusive
       #we don't want to pollute other payments with this source
       #so only override on confirm
       affirm_payment.instance_eval do
+          @affirm_charge_token = charge_token
           def source
-              Spree::AffirmCheckout.new(response_code)
+              Spree::AffirmCheckout.new(@affirm_charge_token)
           end
       end
       logger.info "affirm payment source: #{affirm_payment.source.inspect}"

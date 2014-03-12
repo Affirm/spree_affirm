@@ -1,8 +1,8 @@
 module Spree
   class AffirmCheckout
-      attr_accessor :charge_id
-      def initialize(charge_id)
-          @charge_id = charge_id
+      attr_accessor :charge_token
+      def initialize(charge_token)
+          @charge_token = charge_token
       end
       def valid?
           true
