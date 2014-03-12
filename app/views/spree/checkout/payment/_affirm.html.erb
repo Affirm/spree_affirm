@@ -40,7 +40,6 @@ var affirm_checkout_data = {
     discount_code:        "<%= @order.coupon_code %>",
 
     shipping: {
-        phone_number: "<%= @order.ship_address.phone %>",
         name: {
             full:  "<%= @order.ship_address.full_name %>",
         },
@@ -55,7 +54,6 @@ var affirm_checkout_data = {
     },
 
     billing: {
-        phone_number: "<%= @order.bill_address.phone %>",
         email: "<%= @order.email %>",
         name: {
             full:   "<%= @order.bill_address.full_name %>"

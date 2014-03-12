@@ -2,7 +2,7 @@ module Spree
   class Gateway::Affirm < Gateway
     preference :api_key, :string
     preference :secret_key, :string
-    preference :server, :string, default: 'affirm.com'
+    preference :server, :string, default: 'www.affirm.com'
 
     def provider_class
       ActiveMerchant::Billing::Affirm
