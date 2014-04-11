@@ -17,7 +17,7 @@ module ActiveMerchant #:nodoc:
       end
 
       def authorize(money, affirm_source, options = {})
-        result = commit(:post, "", {"charge_token"=>affirm_source.charge_token}, options, true)
+        result = commit(:post, "", {"checkout_token"=>affirm_source.charge_token}, options, true)
         puts "comparing #{result.params["amount"]} against #{money} cents: #{amount(money)}"
         if amount(money).to_i != result.params["amount"].to_i
           return Response.new(false,
