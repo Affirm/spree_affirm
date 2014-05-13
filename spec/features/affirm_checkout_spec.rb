@@ -11,7 +11,11 @@ describe "Affirm checkout" do
   let!(:affirm_payment_gateway) do
     Spree::Gateway::Affirm.create(
       :name => "Affirm",
-      :environment => "test"
+      :environment => "test",
+      :preferred_server => "sandbox.affirm.com",
+      :preferred_api_key => "api key",
+      :preferred_secret_key => "secret key",
+      :preferred_test_mode => "1"
     )
   end
 
@@ -44,7 +48,7 @@ describe "Affirm checkout" do
           click_link "affirm_button_link"
         end
         within_frame(find("#affirm_error_screen")) do
-          page.should have_content("Invalid Request")
+          page.should have_content("encountered a problem")
         end
       end
 
@@ -53,10 +57,10 @@ describe "Affirm checkout" do
 
   def fill_in_address
     address = "order_bill_address_attributes"
-    fill_in "#{address}_firstname", :with => "Ryan"
-    fill_in "#{address}_lastname", :with => "Bigg"
-    fill_in "#{address}_address1", :with => "143 Swan Street"
-    fill_in "#{address}_city", :with => "Richmond"
+    fill_in "#{address}_firstname", :with => "Jane"
+    fill_in "#{address}_lastname", :with => "Smithers"
+    fill_in "#{address}_address1", :with => "88 Pine Way"
+    fill_in "#{address}_city", :with => "Huntsville"
     select "United States of America", :from => "#{address}_country_id"
     select "Alabama", :from => "#{address}_state_id"
     fill_in "#{address}_zipcode", :with => "12345"
