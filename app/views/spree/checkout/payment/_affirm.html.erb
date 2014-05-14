@@ -1,104 +1,117 @@
-<script>
-    var _affirm_config = {
-      public_api_key:          "<%= payment_method.preferred_api_key %>",
-      script: "https://<%= payment_method.preferred_server %>/js/v2/affirm.js"
-    };
-    (function(l,g,m,e,a,f,b){var d,c=l[m]||{},h=document.createElement(f),n=document.getElementsByTagName(f)[0],k=function(a,b,c){return function(){a[b]._.push([c,arguments])}};c[e]=k(c,e,"set");d=c[e];c[a]={};c[a]._=[];d._=[];c[a][b]=k(c,a,b);a=0;for(b="set add save post open empty reset on off trigger ready setProduct".split(" ");a<b.length;a++)d[b[a]]=k(c,e,b[a]);a=0;for(b=["get","token","url","items"];a<b.length;a++)d[b[a]]=function(){};h.async=!0;h.src=g[f];n.parentNode.insertBefore(h,n);delete g[f];d(g);l[m]=c})(window,_affirm_config,"affirm","checkout","ui","script","ready");
-</script>
-
 <div class="affirm-checkout-button" data-product-key="<%= payment_method.preferred_product_key %>"></div>
 
 <script>
-if(typeof AffirmPaymentMethods === "undefined")
-{
-    //register the click handler only once
-    AffirmPaymentMethods = {};
-    function setAffirmCheckout(checkedPaymentMethod){
-        if(AffirmPaymentMethods[checkedPaymentMethod])
-        {
-            affirm.checkout.set(AffirmPaymentMethods[checkedPaymentMethod]);
-        }
-    }
+(function(){
+  /* only include this setup once */
+  if (!window.AffirmPaymentMethods) {
 
-    $(document).ready(function() {
+    /*****************************************************\
+        Include the affirm js snippet
+    \*****************************************************/
+    var _affirm_config = {
+      public_api_key: "<%= payment_method.preferred_api_key %>",
+      script: "https://<%= payment_method.preferred_server %>/js/v2/affirm.js"
+    };
+    (function(l,g,m,e,a,f,b){var d,c=l[m]||{},h=document.createElement(f),n=document.getElementsByTagName(f)[0],k=function(a,b,c){return function(){a[b]._.push([c,arguments])}};c[e]=k(c,e,"set");d=c[e];c[a]={};c[a]._=[];d._=[];c[a][b]=k(c,a,b);a=0;for(b="set add save post open empty reset on off trigger ready setProduct".split(" ");a<b.length;a++)d[b[a]]=k(c,e,b[a]);a=0;for(b=["get","token","url","items"];a<b.length;a++)d[b[a]]=function(){};h.async=!0;h.src=g[f];n.parentNode.insertBefore(h,n);delete g[f];d(g);l[m]=c})(window,_affirm_config,"affirm","checkout","ui","script","ready");
+
+
+    /*****************************************************\
+        handle continue button clicks with .open()
+    \*****************************************************/
+    window.AffirmPaymentMethods = {};
+
+    $(function() {
+      $('.continue').click(function(e){
         var checkedPaymentMethod = $('div[data-hook="checkout_payment_step"] input[type="radio"]:checked').val();
-        setAffirmCheckout(checkedPaymentMethod);
-        $('div[data-hook="checkout_payment_step"] input[type="radio"]').click(function(e)
-        {
-            setAffirmCheckout($(e.target).val());
-        });
-        $('.continue').click( function(){
-            var checkedPaymentMethod = $('div[data-hook="checkout_payment_step"] input[type="radio"]:checked').val();
-            if(AffirmPaymentMethods[checkedPaymentMethod])
-            {
-                affirm.checkout.open();
-                return false;
-            }
-        });
-    })
-}
 
-var affirm_checkout_data = {
-    checkout_id:          "<%= @order.number %>",
-    currency:             "USD",
-    shipping_amount:      <%= @order.shipment_total * 100 %>,
-    shipping_type:        "<%= @order.shipments.first.shipping_method.name if @order.shipments %>",
-    tax_amount:           <%= @order.additional_tax_total * 100 %>,
-    misc_fee_amount:      <%= (@order.adjustment_total - @order.additional_tax_total) * 100 %>,
-    discount_code:        "<%= @order.coupon_code %>",
+        if (window.AffirmPaymentMethods[checkedPaymentMethod]) {
+          affirm.checkout(window.AffirmPaymentMethods[checkedPaymentMethod]);
+          affirm.checkout.open();
 
-    shipping: {
+          e.preventDefault();
+          return false;
+        }
+      });
+    });
+
+    /*****************************************************\
+        set the shared checkout data
+    \*****************************************************/
+    affirm.checkout({
+      currency:             "USD",
+      tax_amount:           <%= @order.additional_tax_total * 100 %>,
+      checkout_id:          "<%= @order.number %>",
+      discount_code:        "<%= @order.coupon_code %>",
+      shipping_type:        "<%= @order.shipments.first.shipping_method.name if @order.shipments %>",
+      shipping_amount:      <%= @order.shipment_total * 100 %>,
+      misc_fee_amount:      <%= (@order.adjustment_total - @order.additional_tax_total) * 100 %>,
+
+      shipping: {
         name: {
-            full:  "<%= @order.ship_address.full_name %>",
+          full:  "<%= @order.ship_address.full_name %>",
         },
         address: {
-            line1:        "<%= @order.ship_address.address1 %>",
-            line2:        "<%= @order.ship_address.address2 %>",
-            city:         "<%= @order.ship_address.city %>",
-            state:        "<%= @order.ship_address.state_text %>",
-            country:      "<%= @order.ship_address.country.iso %>",
-            zipcode:      "<%= @order.ship_address.zipcode %>",
+          line1:        "<%= @order.ship_address.address1 %>",
+          line2:        "<%= @order.ship_address.address2 %>",
+          city:         "<%= @order.ship_address.city %>",
+          state:        "<%= @order.ship_address.state_text %>",
+          country:      "<%= @order.ship_address.country.iso %>",
+          zipcode:      "<%= @order.ship_address.zipcode %>",
         }
-    },
+      },
 
-    billing: {
+      billing: {
         email: "<%= @order.email %>",
         name: {
-            full:   "<%= @order.bill_address.full_name %>"
+          full:   "<%= @order.bill_address.full_name %>"
         },
         address: {
-            line1:          "<%= @order.bill_address.address1 %>",
-            line2:          "<%= @order.bill_address.address2 %>",
-            city:           "<%= @order.bill_address.city %>",
-            state:          "<%= @order.bill_address.state_text %>",
-            country:        "<%= @order.bill_address.country.iso %>",
-            zipcode:        "<%= @order.bill_address.zipcode %>",
+          line1:          "<%= @order.bill_address.address1 %>",
+          line2:          "<%= @order.bill_address.address2 %>",
+          city:           "<%= @order.bill_address.city %>",
+          state:          "<%= @order.bill_address.state_text %>",
+          country:        "<%= @order.bill_address.country.iso %>",
+          zipcode:        "<%= @order.bill_address.zipcode %>",
         }
-    },
+      },
 
-    merchant: {
-        public_api_key:           "<%= payment_method.preferred_api_key %>",
+      merchant: {
         user_confirmation_url:    "<%= confirm_affirm_url(:payment_method_id => payment_method.id) %>",
         user_cancel_url:          "<%= cancel_affirm_url(:payment_method_id => payment_method.id) %>",
-    },
-    config: {
-        financial_product_key:        "<%= payment_method.preferred_product_key %>",
+      },
+
+      config: {
         required_billing_fields:      "name,address,email",
-    },
-    items: [
-    <% @order.line_items.each do |item| %>
-    {
-        display_name:         "<%= raw(item.variant.product.name) %>",
-        item_url:             "<%= product_url(item.product) %>",
-        <% if item.variant.images.any? %>
-        item_image_url: "<%= URI.join(root_url, item.variant.images.first.attachment.url(:large)) %>",
+      },
+
+      items: [
+        <% @order.line_items.each do |item| %>
+        {
+          <% if item.variant.images.any? %>
+            item_image_url: "<%= URI.join(root_url, item.variant.images.first.attachment.url(:large)) %>",
+          <% end %>
+
+          qty:           <%= item.quantity %>,
+          sku:           "<%= item.variant.sku %>",
+          item_url:      "<%= product_url(item.product) %>",
+          unit_price:    <%= item.price * 100 %>,
+          display_name:  "<%= raw(item.variant.product.name) %>"
+        },
         <% end %>
-        qty:                  <%= item.quantity %>,
-        sku:                  "<%= item.variant.sku %>",
-        unit_price:           <%= item.price * 100 %>
-    },
-    <% end %>
-    ]
-};
-AffirmPaymentMethods["<%= payment_method.id %>"] = affirm_checkout_data;
+      ]
+    });
+  }
+
+
+  /*****************************************************\
+      set the product/button specific data to be
+      used when the continue button is directly
+      clicked
+  \*****************************************************/
+  window.AffirmPaymentMethods["<%= payment_method.id %>"] = {
+    public_api_key:           "<%= payment_method.preferred_api_key %>",
+    financial_product_key:        "<%= payment_method.preferred_product_key %>"
+  };
+
+}());
 </script>
