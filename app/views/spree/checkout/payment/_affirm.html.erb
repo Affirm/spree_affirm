@@ -90,7 +90,7 @@ var affirm_checkout_data = {
     {
         display_name:         "<%= raw(item.variant.product.name) %>",
         item_url:             "<%= product_url(item.product) %>",
-        <% if item.variant.images.length %>
+        <% if item.variant.images.any? %>
         item_image_url: "<%= URI.join(root_url, item.variant.images.first.attachment.url(:large)) %>",
         <% end %>
         qty:                  <%= item.quantity %>,
