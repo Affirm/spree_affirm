@@ -7,13 +7,11 @@ module Spree
       self.token = token
     end
 
-    def read
-      self.details = payment.payment_method.get_checkout token
+    def details
+      @details ||= payment.payment_method.get_checkout token
     end
 
     def valid?
-      read if details.nil?
-
       self.errors['line_items']            = "Checkout Items mismatch" unless valid_products?
       self.errors['billing_email']         = "Email mismatch" unless matching_product_key?
       self.errors['billing_address']       = "billing address mismatch" unless matching_product_key?
