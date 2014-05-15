@@ -81,8 +81,8 @@ module Spree
 
     def generate_spree_address(affirm_address)
       # find the state and country in spree
-      _state    = Spree::State.find_by_abbr(affirm_address["address"]["state"])
-      _country  = Spree::Country.find_by_iso(affirm_address["address"]["coutnry"])
+      _state    = Spree::State.find_by_abbr(affirm_address["address"]["region1_code"])
+      _country  = Spree::Country.find_by_iso3(affirm_address["address"]["country_code"])
 
       # try to get the name from first and last
       _firstname = affirm_address["address"]["name"]["first"] if affirm_address["address"]["name"]["first"]
@@ -99,9 +99,9 @@ module Spree
       _spree_address = Spree::Address.new(
         city:       affirm_address["address"]["city"],
         phone:      affirm_address["phone_number"],
-        zipcode:    affirm_address["address"]["zipcode"],
-        address1:   affirm_address["address"]["line1"],
-        address2:   affirm_address["address"]["line2"],
+        zipcode:    affirm_address["address"]["postal_code"],
+        address1:   affirm_address["address"]["street1"],
+        address2:   affirm_address["address"]["street2"],
         state:      _state,
         country:    _country,
         lastname:   _lastname,

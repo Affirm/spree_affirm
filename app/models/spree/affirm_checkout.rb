@@ -64,11 +64,11 @@ module Spree
     def check_address_match(affirm_address, spree_address, field)
       # mapping from affirm address keys to spree address values
       _key_mapping = {
-        city:         spree_address["city"],
-        street1:      spree_address["address1"],
-        street1:      spree_address["address2"],
-        postal_code:  spree_address["zipcode"],
-        region1_code: spree_address["state"]["abbr"]
+        city:         spree_address.city,
+        street1:      spree_address.address1,
+        street1:      spree_address.address2,
+        postal_code:  spree_address.zipcode,
+        region1_code: spree_address.state.abbr
 
       # check that each value from affirm matches the spree address
       }.each do |affirm_key, spree_val|
