@@ -130,7 +130,7 @@ module ActiveMerchant #:nodoc:
         _url           = root_api_url + "checkout/#{checkout_token}"
         _raw_response  = ssl_request :get, _url, nil, headers
 
-        parse(raw_response)
+        parse(_raw_response)
       end
 
       def commit(method, url, parameters=nil, options = {}, ret_charge=false)

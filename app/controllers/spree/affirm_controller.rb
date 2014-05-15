@@ -17,6 +17,7 @@ module Spree
       end
 
       _affirm_checkout = Spree::AffirmCheckout.new(
+        order: order,
         token: params[:checkout_token],
         payment_method: payment_method
       )

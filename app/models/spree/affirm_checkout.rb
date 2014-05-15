@@ -2,12 +2,13 @@ module Spree
   class AffirmCheckout < ActiveRecord::Base
     attr_accessor :token
     belongs_to :payment_method
+    belongs_to :order
 
     def initialize
     end
 
     def details
-      @details ||= payment_method.get_checkout token
+      @details ||= payment_method.provider.get_checkout token
     end
 
     def valid?
@@ -58,10 +59,6 @@ module Spree
     end
 
     private
-
-    def order
-      self.payment.order
-    end
 
     def check_address_match(affirm_address, spree_address)
       # mapping from affirm address keys to spree address values

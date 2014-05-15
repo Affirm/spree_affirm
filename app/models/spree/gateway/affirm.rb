@@ -9,7 +9,6 @@ module Spree
       ActiveMerchant::Billing::Affirm
     end
 
-    #this is NOT a active record! it's a hack!
     def payment_source_class
         Spree::AffirmCheckout
     end
