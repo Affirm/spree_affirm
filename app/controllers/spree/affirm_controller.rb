@@ -27,13 +27,13 @@ module Spree
 
         _affirm_checkout.errors.each do |field, error|
           case field
-          when "billing_address"
+          when :billing_address
             order.bill_address = generate_spree_address(_affirm_checkout.details['billing'])
 
-          when "shipping_address"
+          when :shipping_address
             order.ship_address = generate_spree_address(_affirm_checkout.details['shipping'])
 
-          when "billing_email"
+          when :billing_email
             order.email = _affirm_checkout.details["billing"]["email"]
 
           end
