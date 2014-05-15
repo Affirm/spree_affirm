@@ -1,14 +1,14 @@
 module Spree
   class AffirmCheckout < ActiveRecord::Base
     attr_accessor :token
-    has_one :payment
+    belongs_to :payment_method
 
     def initialize(token)
       self.token = token
     end
 
     def details
-      @details ||= payment.payment_method.get_checkout token
+      @details ||= payment_method.get_checkout token
     end
 
     def valid?
@@ -55,7 +55,7 @@ module Spree
     end
 
     def matching_product_key?
-      details["config"]["financial_product_type"] == payment.payment_method.preferred_product_key
+      details["config"]["financial_product_type"] == payment_method.preferred_product_key
     end
 
     private
