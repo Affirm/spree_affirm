@@ -16,7 +16,10 @@ module Spree
         return redirect_to checkout_state_path(current_order.state)
       end
 
-      _affirm_checkout = Spree::AffirmCheckout.new params[:checkout_token]
+      _affirm_checkout = Spree::AffirmCheckout.new(
+        token: params[:checkout_token],
+        payment_method: payment_method
+      )
 
       # check if data needs to be updated
       unless _affirm_checkout.valid?

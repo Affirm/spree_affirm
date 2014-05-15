@@ -3,8 +3,7 @@ module Spree
     attr_accessor :token
     belongs_to :payment_method
 
-    def initialize(token)
-      self.token = token
+    def initialize
     end
 
     def details
