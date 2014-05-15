@@ -89,17 +89,18 @@ module Spree
         _name_parts = affirm_address["address"]["name"]["full"].split " "
         _lastname   = _name_parts.pop
         _firstname  = _name_parts.join " "
+      end
 
       # create new address
       _spree_address = Spree::Address.new(
-        city:       affirm_address["address"]["city"]
-        phone:      affirm_address["phone_number"]
-        zipcode:    affirm_address["address"]["zipcode"]
-        address1:   affirm_address["address"]["line1"]
-        address2:   affirm_address["address"]["line2"]
-        state:      _state
-        country:    _country
-        lastname:   _lastname
+        city:       affirm_address["address"]["city"],
+        phone:      affirm_address["phone_number"],
+        zipcode:    affirm_address["address"]["zipcode"],
+        address1:   affirm_address["address"]["line1"],
+        address2:   affirm_address["address"]["line2"],
+        state:      _state,
+        country:    _country,
+        lastname:   _lastname,
         firstname:  _firstname
       )
 

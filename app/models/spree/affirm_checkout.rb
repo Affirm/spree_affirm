@@ -1,7 +1,7 @@
 module Spree
   class AffirmCheckout < ActiveRecord::Base
     attr_accessor :token
-    has_one: :payment
+    has_one :payment
 
     def initialize(token)
       self.token = token
@@ -36,7 +36,7 @@ module Spree
 
         # check quantity & price
         return false if _item.qty.to_i   != line_item.quantity.to_i or
-                        _item.price.to_i != (line_item.price*100).to_i or
+                        _item.price.to_i != (line_item.price*100).to_i
 
       end
 
@@ -69,12 +69,12 @@ module Spree
     def check_address_match(affirm_address, spree_address)
       # mapping from affirm address keys to spree address values
       _key_mapping = {
-        city:    spree_address["city"]
-        zipcode: spree_address["zipcode"]
+        city:    spree_address["city"],
+        zipcode: spree_address["zipcode"],
+        line1:   spree_address["address1"],
+        line1:   spree_address["address2"],
+        state:   spree_address["state"]["abbr"],
         country: spree_address["country"]["iso"]
-        line1:   spree_address["address1"]
-        line1:   spree_address["address2"]
-        state:   spree_address["state"]["abbr"]
 
       # check that each value from affirm matches the spree address
       }.each do |affirm_key, spree_val|
