@@ -4,14 +4,12 @@ module Spree
     belongs_to :payment_method
     belongs_to :order
 
-    def initialize
-    end
-
     def details
       @details ||= payment_method.provider.get_checkout token
     end
 
     def valid?
+      self.errors.clear
       self.errors['line_items']            = "Checkout Items mismatch" unless valid_products?
       self.errors['billing_email']         = "Email mismatch" unless matching_product_key?
       self.errors['billing_address']       = "billing address mismatch" unless matching_product_key?
@@ -30,12 +28,17 @@ module Spree
       order.line_items.each do |line_item|
 
         # check that the line item sku exists in the affirm checkout
-        return false unless _item = details["items"][line_item.variant.sku]
+        if !(_item = details["items"][line_item.variant.sku])
+          self.errors[line_item.variant.sku] = "Line Item not in checkout details"
 
         # check quantity & price
-        return false if _item.qty.to_i   != line_item.quantity.to_i or
-                        _item.price.to_i != (line_item.price*100).to_i
+        elsif _item["qty"].to_i   != line_item.quantity.to_i
+          self.errors[line_item.variant.sku] = "Quantity from affirm (#{_item["qty"]}) does not match #{line_item.quantity}"
 
+        elsif _item["unit_price"].to_i != (line_item.price*100).to_i
+          self.errors[line_item.variant.sku] = "Price from affirm (#{_item["price"]}) does not match #{(line_item.price*100).to_i}"
+
+        end
       end
 
       # all products match
@@ -55,7 +58,7 @@ module Spree
     end
 
     def matching_product_key?
-      details["config"]["financial_product_type"] == payment_method.preferred_product_key
+      details["config"]["financial_product_key"] == payment_method.preferred_product_key
     end
 
     private
@@ -63,12 +66,11 @@ module Spree
     def check_address_match(affirm_address, spree_address)
       # mapping from affirm address keys to spree address values
       _key_mapping = {
-        city:    spree_address["city"],
-        zipcode: spree_address["zipcode"],
-        line1:   spree_address["address1"],
-        line1:   spree_address["address2"],
-        state:   spree_address["state"]["abbr"],
-        country: spree_address["country"]["iso"]
+        city:         spree_address["city"],
+        street1:      spree_address["address1"],
+        street1:      spree_address["address2"],
+        postal_code:  spree_address["zipcode"],
+        region1_code: spree_address["state"]["abbr"]
 
       # check that each value from affirm matches the spree address
       }.each do |affirm_key, spree_val|
