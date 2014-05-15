@@ -84,7 +84,11 @@ module ActiveMerchant #:nodoc:
       end
 
       def root_url
-          "https://#{@options[:server]}/api/v2/charges/"
+        "#{root_api_url}/charges/"
+      end
+
+      def root_api_url
+        "https://#{@options[:server]}/api/v2/"
       end
 
       def headers
@@ -103,7 +107,7 @@ module ActiveMerchant #:nodoc:
         return nil unless params
         params.to_json
       end
-        
+
       def response_error(raw_response)
         begin
           parse(raw_response)
@@ -120,6 +124,13 @@ module ActiveMerchant #:nodoc:
             "message" => msg
           }
         }
+      end
+
+      def get_checkout(checkout_token)
+        _url           = root_api_url + "checkout/#{checkout_token}"
+        _raw_response  = ssl_request :get, _url, nil, headers
+
+        parse(raw_response)
       end
 
       def commit(method, url, parameters=nil, options = {}, ret_charge=false)

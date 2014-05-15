@@ -5,38 +5,55 @@ module Spree
 
     def confirm
       order = current_order || raise(ActiveRecord::RecordNotFound)
+
       if !params[:checkout_token]
         flash[:notice] = "Invalid order confirmation data."
         return redirect_to checkout_state_path(current_order.state)
       end
+
       if order.complete?
         flash[:notice] = "Order already completed."
         return redirect_to checkout_state_path(current_order.state)
       end
-      affirm_payment = order.payments.create!({
-        :amount => order.total,
-        :payment_method => payment_method
-      })
-      checkout_token = params[:checkout_token]
-      #dangerous... but this seems the least intrusive
-      #we don't want to pollute other payments with this source
-      #so only override on confirm
-      affirm_payment.instance_eval do
-          @affirm_checkout_token = checkout_token
-          def source
-              Spree::AffirmCheckout.new(@affirm_checkout_token)
+
+      _affirm_checkout = Spree::AffirmCheckout.new params[:checkout_token]
+
+      # check if data needs to be updated
+      unless _affirm_checkout.valid?
+
+        _affirm_checkout.errors.each do |field, error|
+          case field
+          when "billing_address"
+            order.bill_address = generate_spree_address(_affirm_checkout.details['billing'])
+
+          when "shipping_address"
+            order.ship_address = generate_spree_address(_affirm_checkout.details['shipping'])
+
+          when "billing_email"
+            order.email = _affirm_checkout.details["billing"]["email"]
+
           end
+        end
+
+        order.save
       end
-      logger.info "affirm payment source: #{affirm_payment.source.inspect}"
+
+      _affirm_checkout.save
+
+      _affirm_payment = order.payments.create!({
+        payment_method: payment_method,
+        amount: order.total,
+        source: _affirm_checkout
+      })
+
       order.next
+
       if order.complete?
         flash.notice = Spree.t(:order_processed_successfully)
         flash[:commerce_tracking] = "nothing special"
-        redirect_to completion_route(order)
-      else
-        flash.notice = "There was an error completing your order"
-        redirect_to checkout_state_path(order.state)
       end
+
+      redirect_to checkout_state_path(order.state)
     end
 
     def cancel
@@ -56,6 +73,38 @@ module Spree
 
     def completion_route(order)
       order_path(order, :token => order.token)
+    end
+
+    def generate_spree_address(affirm_address)
+      # find the state and country in spree
+      _state    = Spree::State.find_by_abbr(affirm_address["address"]["state"])
+      _country  = Spree::Country.find_by_iso(affirm_address["address"]["coutnry"])
+
+      # try to get the name from first and last
+      _firstname = affirm_address["address"]["name"]["first"] if affirm_address["address"]["name"]["first"]
+      _lastname  = affirm_address["address"]["name"]["last"]  if affirm_address["address"]["name"]["last"]
+
+      # fall back to using the full name if available
+      if _firstname.nil? and _lastname.nil? and affirm_address["address"]["name"]["full"]
+        _name_parts = affirm_address["address"]["name"]["full"].split " "
+        _lastname   = _name_parts.pop
+        _firstname  = _name_parts.join " "
+
+      # create new address
+      _spree_address = Spree::Address.new(
+        city:       affirm_address["address"]["city"]
+        phone:      affirm_address["phone_number"]
+        zipcode:    affirm_address["address"]["zipcode"]
+        address1:   affirm_address["address"]["line1"]
+        address2:   affirm_address["address"]["line2"]
+        state:      _state
+        country:    _country
+        lastname:   _lastname
+        firstname:  _firstname
+      )
+
+      _spree_address.save
+      _spree_address
     end
   end
 end
