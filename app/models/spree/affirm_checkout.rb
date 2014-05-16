@@ -27,10 +27,10 @@ module Spree
 
         # check quantity & price
         elsif _item["qty"].to_i   != line_item.quantity.to_i
-          errors.add line_item.variant.sku.to_sym, "Quantity from affirm (#{_item["qty"]}) does not match #{line_item.quantity}"
+          errors.add line_item.variant.sku.to_sym, "Quantity mismatch"
 
         elsif _item["unit_price"].to_i != (line_item.price*100).to_i
-          errors.add line_item.variant.sku.to_sym, "Price from affirm (#{_item["price"]}) does not match #{(line_item.price*100).to_i}"
+          errors.add line_item.variant.sku.to_sym, "Price mismatch"
 
         end
       end
@@ -49,13 +49,13 @@ module Spree
 
     def matching_billing_email?
       unless details["billing"]["email"].nil? or details["billing"]["email"] == order.email
-        errors.add :billing_email, "Affirm billing email (#{details["billing"]["email"]}) does not match #{order.email}"
+        errors.add :billing_email, "Billing email mismatch"
       end
     end
 
     def matching_product_key?
       if details["config"]["financial_product_key"] != payment_method.preferred_product_key
-        errors.add :financial_product_key, "Mismatch: (#{details["config"]["financial_product_key"]}) does not match #{payment_method.preferred_product_key}"
+        errors.add :financial_product_key, "Product key mismatch"
       end
     end
 
@@ -66,7 +66,7 @@ module Spree
       _key_mapping = {
         city:         spree_address.city,
         street1:      spree_address.address1,
-        street1:      spree_address.address2,
+        street2:      spree_address.address2,
         postal_code:  spree_address.zipcode,
         region1_code: spree_address.state.abbr
 

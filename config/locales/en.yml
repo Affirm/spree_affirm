@@ -3,3 +3,18 @@
 
 en:
   hello: "Hello world"
+  "Order size mismatch": "Order size mismatch"
+  "Line Item not in checkout details": "Line Item not in checkout details"
+  "Quantity mismatch": "Quantity mismatch"
+  "Price mismatch": "Price mismatch"
+  "Billing email mismatch": "Billing email mismatch"
+  "Product key mismatch": "Product key mismatch"
+  "city mismatch": "city mismatch"
+  "street1 mismatch": "city mismatch"
+  "street2 mismatch": "city mismatch"
+  "postal_code mismatch": "city mismatch"
+  "region1_code mismatch": "city mismatch"
+  "city mismatch": "city mismatch"
+  "First/Last name mismatch": "First/Last name mismatch"
+  "Full name mismatch": "Full name mismatch"
+

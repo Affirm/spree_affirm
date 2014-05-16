@@ -85,12 +85,12 @@ module Spree
       _country  = Spree::Country.find_by_iso3(affirm_address["address"]["country_code"])
 
       # try to get the name from first and last
-      _firstname = affirm_address["address"]["name"]["first"] if affirm_address["address"]["name"]["first"]
-      _lastname  = affirm_address["address"]["name"]["last"]  if affirm_address["address"]["name"]["last"]
+      _firstname = affirm_address["name"]["first"] if affirm_address["name"]["first"]
+      _lastname  = affirm_address["name"]["last"]  if affirm_address["name"]["last"]
 
       # fall back to using the full name if available
-      if _firstname.nil? and _lastname.nil? and affirm_address["address"]["name"]["full"]
-        _name_parts = affirm_address["address"]["name"]["full"].split " "
+      if _firstname.nil? and _lastname.nil? and affirm_address["name"]["full"]
+        _name_parts = affirm_address["name"]["full"].split " "
         _lastname   = _name_parts.pop
         _firstname  = _name_parts.join " "
       end
