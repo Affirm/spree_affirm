@@ -81,8 +81,8 @@ module Spree
 
       # test affirm names with first and last
       if affirm_address["name"]["first"].present? and affirm_address["name"]["last"].present? and
-        (affirm_address["name"]["first"] != spree_address.firstname or
-         affirm_address["name"]["last"]  != spree_address.lastname)
+        (affirm_address["name"]["first"].casecmp(spree_address.firstname) != 0 or
+         affirm_address["name"]["last"].casecmp(spree_address.lastname) != 0)
 
         errors.add field, "First/Last name mismatch"
 
