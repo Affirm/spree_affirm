@@ -80,14 +80,14 @@ module Spree
       end
 
       # test affirm names with first and last
-      if affirm_address["name"]["first"] and affirm_address["name"]["last"] and
-         affirm_address["name"]["first"] != spree_address.firstname or
-         affirm_address["name"]["last"]  != spree_address.lastname
+      if affirm_address["name"]["first"].present? and affirm_address["name"]["last"].present? and
+        (affirm_address["name"]["first"] != spree_address.firstname or
+         affirm_address["name"]["last"]  != spree_address.lastname)
 
         errors.add field, "First/Last name mismatch"
 
       # test affirm names with full name
-      elsif affirm_address["name"]["full"] and
+      elsif affirm_address["name"]["full"].present? and
           !(affirm_address["name"]["full"].include?(spree_address.firstname) and
             affirm_address["name"]["full"].include?(spree_address.lastname))
 
