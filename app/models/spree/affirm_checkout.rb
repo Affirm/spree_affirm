@@ -40,10 +40,18 @@ module Spree
     end
 
     def matching_billing_address?
+      # ensure we have a standardized address format
+      details['billing']['address'] = normalize_affirm_address details['billing']['address']
+
+      # validate address
       check_address_match details["billing"], order.bill_address, :billing_address
     end
 
     def matching_shipping_address?
+      # ensure we have a standardized address format
+      details['shipping']['address'] = normalize_affirm_address details['shipping']['address']
+
+      # validate address
       check_address_match details["shipping"], order.ship_address, :shipping_address
     end
 
@@ -60,6 +68,28 @@ module Spree
     end
 
     private
+
+
+    def normalize_affirm_address(affirm_address_details)
+      _address_mapping = {
+        "city"         => 'city',
+        "street1"      => 'line1',
+        "street2"      => 'line2',
+        "postal_code"  => 'zipcode',
+        "region1_code" => 'state',
+        "country_code" => 'county'
+      }
+
+      _address_mapping.each do |key, mapped_key|
+
+        unless _address_mapping[key].present?
+          affirm_address_details[key] = affirm_address_details[mapped_key]
+        end
+
+      end
+
+      affirm_address_details
+    end
 
     def check_address_match(affirm_address, spree_address, field)
       # mapping from affirm address keys to spree address values
