@@ -27,7 +27,7 @@ module ActiveMerchant #:nodoc:
         end
         if result.params["pending"].to_s != "true"
           return Response.new(false,
-                              "Auth amount does not match charge amount",
+                              "There was an error authorizing this Charge",
                               result.params
                              )
         end
