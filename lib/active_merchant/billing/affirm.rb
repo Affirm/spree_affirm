@@ -84,7 +84,7 @@ module ActiveMerchant #:nodoc:
       end
 
       def root_url
-        "#{root_api_url}/charges/"
+        "#{root_api_url}charges/"
       end
 
       def root_api_url
