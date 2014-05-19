@@ -81,15 +81,17 @@ module Spree
 
     def generate_spree_address(affirm_address)
       # find the state and country in spree
-      _state    = Spree::State.find_by_abbr(affirm_address["address"]["region1_code"])
-      _country  = Spree::Country.find_by_iso3(affirm_address["address"]["country_code"])
+      _state    = Spree::State.find_by_abbr(affirm_address["address"]["region1_code"]) or
+                  Spree::State.find_by_name(affirm_address["address"]["region1_code"])
+      _country  = Spree::Country.find_by_iso3(affirm_address["address"]["country_code"]) or
+                  Spree::Country.find_by_iso(affirm_address["address"]["country_code"])
 
       # try to get the name from first and last
-      _firstname = affirm_address["name"]["first"] if affirm_address["name"]["first"]
-      _lastname  = affirm_address["name"]["last"]  if affirm_address["name"]["last"]
+      _firstname = affirm_address["name"]["first"] if affirm_address["name"]["first"].present?
+      _lastname  = affirm_address["name"]["last"]  if affirm_address["name"]["last"].present?
 
       # fall back to using the full name if available
-      if _firstname.nil? and _lastname.nil? and affirm_address["name"]["full"]
+      if _firstname.nil? and _lastname.nil? and affirm_address["name"]["full"].present?
         _name_parts = affirm_address["name"]["full"].split " "
         _lastname   = _name_parts.pop
         _firstname  = _name_parts.join " "
