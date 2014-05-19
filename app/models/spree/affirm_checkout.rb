@@ -1,6 +1,5 @@
 module Spree
   class AffirmCheckout < ActiveRecord::Base
-    attr_accessor :token
     belongs_to :payment_method
     belongs_to :order
 
