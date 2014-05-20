@@ -5,6 +5,7 @@ require 'spec_helper'
 
 describe Spree::AffirmCheckout do
   let(:valid_checkout) { FactoryGirl.create(:affirm_checkout) }
+  let(:affirm_payment) { FactoryGirl.create(:affirm_payment) }
 
   describe '#details' do
     it "calls get_checkout from the payment provider exactly once" do
@@ -194,34 +195,42 @@ describe Spree::AffirmCheckout do
 
     describe "can_capture?" do
       context "with a payment response code set" do
+        before(:each) { affirm_payment.response_code = "1234-1234" }
+
         context "with a payment in pending state" do
+          before(:each) { affirm_payment.state = 'pending' }
+
           it "returns true" do
-
-
+            expect(valid_checkout.can_capture?(affirm_payment)).to be(true)
           end
         end
 
 
         context "with a payment in checkout state" do
+          before(:each) { affirm_payment.state = 'checkout' }
+
           it "returns true" do
-
-
+            expect(valid_checkout.can_capture?(affirm_payment)).to be(true)
           end
         end
 
 
         context "with a payment in complete state" do
+          before(:each) { affirm_payment.state = 'complete' }
+
           it "returns false" do
-
-
+            expect(valid_checkout.can_capture?(affirm_payment)).to be(false)
           end
         end
+
       end
 
 
       context "with no response code set on the payment" do
-        it "returns false" do
+        before(:each) { affirm_payment.response_code = nil }
 
+        it "returns false" do
+          expect(valid_checkout.can_capture?(affirm_payment)).to be(false)
         end
       end
     end
@@ -229,40 +238,40 @@ describe Spree::AffirmCheckout do
 
     describe "can_void?" do
       context "with a payment response code set" do
+        before(:each) { affirm_payment.response_code = "1234-1234" }
+
         context "with a payment in pending state" do
+          before(:each) { affirm_payment.state = 'pending' }
+
           it "returns true" do
-
-
-          end
-        end
-
-        context "with a payment in void state" do
-          it "returns true" do
-
-
+            expect(valid_checkout.can_void?(affirm_payment)).to be(true)
           end
         end
 
         context "with a payment in checkout state" do
+          before(:each) { affirm_payment.state = 'checkout' }
+
           it "returns false" do
-
-
+            expect(valid_checkout.can_void?(affirm_payment)).to be(false)
           end
         end
 
 
         context "with a payment in complete state" do
+          before(:each) { affirm_payment.state = 'complete' }
+
           it "returns false" do
-
-
+            expect(valid_checkout.can_void?(affirm_payment)).to be(false)
           end
         end
       end
 
 
       context "with no response code set on the payment" do
-        it "returns false" do
+        before(:each) { affirm_payment.response_code = nil }
 
+        it "returns false" do
+          expect(valid_checkout.can_void?(affirm_payment)).to be(false)
         end
       end
     end
@@ -271,40 +280,53 @@ describe Spree::AffirmCheckout do
 
     describe "can_credit?" do
       context "when the payment has not been completed" do
-        it "returns false" do
+        before(:each) { affirm_payment.state = 'pending' }
 
+        it "returns false" do
+          expect(valid_checkout.can_credit?(affirm_payment)).to be(false)
         end
       end
 
       context "when the payment's order state is not 'credit_owed'" do
-        it "returns false" do
+        before(:each) do
+          affirm_payment.state = 'completed'
+          affirm_payment.order.payment_state = 'completed'
+        end
 
+        it "returns false" do
+          expect(valid_checkout.can_credit?(affirm_payment)).to be(false)
         end
       end
 
       context "when the payement's order state is 'credit_owed'" do
-        context "when the payment has been completed" do
-          context "when the payment credit_allowed is greater than 0" do
-            it "returns true" do
+        before(:each) { affirm_payment.order.payment_state = 'credit_owed' }
 
+        context "when the payment has been completed" do
+          before(:each) { affirm_payment.state = 'completed'}
+
+          context "when the payment credit_allowed is greater than 0" do
+            before(:each) do
+              affirm_payment.stub(:credit_allowed).and_return 100
+            end
+
+            it "returns true" do
+              expect(valid_checkout.can_credit?(affirm_payment)).to be(true)
             end
           end
 
 
           context "when the payment credit_allowed is equal to 0" do
+            before(:each) do
+              affirm_payment.stub(:credit_allowed).and_return 0
+            end
+
             it "returns false" do
-
-
+              expect(valid_checkout.can_credit?(affirm_payment)).to be(false)
             end
           end
         end
       end
 
     end
-
-
   end
-
-
-
 end
