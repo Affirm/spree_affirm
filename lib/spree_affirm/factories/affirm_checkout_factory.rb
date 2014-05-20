@@ -83,10 +83,12 @@ FactoryGirl.define do
 
 
     ignore do
+      stub_details true
       product_key_mismatch false
       shipping_address_mismatch false
       billing_address_mismatch false
       alternate_billing_address_format false
+      billing_address_full_name false
       billing_email_mismatch false
       extra_line_item false
       missing_line_item false
@@ -152,6 +154,13 @@ FactoryGirl.define do
         }
       end
 
+      # use name.full instead of first/last
+      if evaluator.billing_address_full_name
+        _details['billing']['name'] = {
+          'full' => "#{_details['billing']['name']['first']} #{_details['billing']['name']['last']}"
+        }
+      end
+
 
       # billing email
       unless evaluator.billing_email_mismatch
@@ -190,8 +199,9 @@ FactoryGirl.define do
         _details['items'][_details['items'].keys.last]['unit_price'] = 456456
       end
 
-
-      checkout.stub(details: _details)
+      if evaluator.stub_details
+        checkout.stub(details: _details)
+      end
     end
 
   end

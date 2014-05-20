@@ -7,8 +7,16 @@ describe Spree::AffirmCheckout do
   let(:valid_checkout) { FactoryGirl.create(:affirm_checkout) }
 
   describe '#details' do
-
-
+    it "calls get_checkout from the payment provider exactly once" do
+      _checkout = FactoryGirl.build(:affirm_checkout, stub_details: false)
+      _checkout.payment_method.provider.stub(:get_checkout) do
+         {"hello" => "there"}
+      end
+      expect(_checkout.payment_method.provider).to receive(:get_checkout).exactly(1).times
+      _checkout.details
+      _checkout.details
+      _checkout.details
+    end
   end
 
 
@@ -79,6 +87,14 @@ describe Spree::AffirmCheckout do
           expect(valid_checkout.errors[:billing_address]).to be_empty
         end
       end
+
+      context "with a name.full instead of first/last" do
+        it "does not set any error for the billing_address" do
+          _checkout = FactoryGirl.build(:affirm_checkout, billing_address_full_name: true)
+          _checkout.check_matching_billing_address
+          expect(_checkout.errors[:billing_address]).to be_empty
+        end
+      end
     end
 
     context "with a mismtached billing address" do
@@ -91,6 +107,15 @@ describe Spree::AffirmCheckout do
       context "with alternate address format" do
         it "sets an error for the billing_address" do
           _checkout = FactoryGirl.build(:affirm_checkout, billing_address_mismatch: true, alternate_billing_address_format: true)
+          _checkout.check_matching_billing_address
+          expect(_checkout.errors[:billing_address]).not_to be_empty
+        end
+      end
+
+
+      context "with a name.full instead of first/last" do
+        it "sets an error for the billing_address" do
+          _checkout = FactoryGirl.build(:affirm_checkout, billing_address_mismatch: true, billing_address_full_name: true)
           _checkout.check_matching_billing_address
           expect(_checkout.errors[:billing_address]).not_to be_empty
         end
@@ -168,22 +193,112 @@ describe Spree::AffirmCheckout do
 
 
     describe "can_capture?" do
+      context "with a payment response code set" do
+        context "with a payment in pending state" do
+          it "returns true" do
 
 
+          end
+        end
 
+
+        context "with a payment in checkout state" do
+          it "returns true" do
+
+
+          end
+        end
+
+
+        context "with a payment in complete state" do
+          it "returns false" do
+
+
+          end
+        end
+      end
+
+
+      context "with no response code set on the payment" do
+        it "returns false" do
+
+        end
+      end
     end
 
 
     describe "can_void?" do
+      context "with a payment response code set" do
+        context "with a payment in pending state" do
+          it "returns true" do
 
 
+          end
+        end
 
+        context "with a payment in void state" do
+          it "returns true" do
+
+
+          end
+        end
+
+        context "with a payment in checkout state" do
+          it "returns false" do
+
+
+          end
+        end
+
+
+        context "with a payment in complete state" do
+          it "returns false" do
+
+
+          end
+        end
+      end
+
+
+      context "with no response code set on the payment" do
+        it "returns false" do
+
+        end
+      end
     end
 
 
 
     describe "can_credit?" do
+      context "when the payment has not been completed" do
+        it "returns false" do
 
+        end
+      end
+
+      context "when the payment's order state is not 'credit_owed'" do
+        it "returns false" do
+
+        end
+      end
+
+      context "when the payement's order state is 'credit_owed'" do
+        context "when the payment has been completed" do
+          context "when the payment credit_allowed is greater than 0" do
+            it "returns true" do
+
+            end
+          end
+
+
+          context "when the payment credit_allowed is equal to 0" do
+            it "returns false" do
+
+
+            end
+          end
+        end
+      end
 
     end
 
