@@ -3,15 +3,15 @@ module Spree
     belongs_to :payment_method
     belongs_to :order
 
-    validate :valid_products?, :matching_shipping_address?,
-             :matching_billing_address?, :matching_billing_email?,
-             :matching_product_key?
+    validate :check_valid_products, :check_matching_shipping_address,
+             :check_matching_billing_address, :check_matching_billing_email,
+             :check_matching_product_key
 
     def details
       @details ||= payment_method.provider.get_checkout token
     end
 
-    def valid_products?
+    def check_valid_products
       # ensure the number of line items matches
       if details["items"].size != order.line_items.size
         errors.add :line_items, "Order size mismatch"
@@ -38,7 +38,7 @@ module Spree
       true
     end
 
-    def matching_billing_address?
+    def check_matching_billing_address
       # ensure we have a standardized address format
       details['billing']['address'] = normalize_affirm_address details['billing']['address']
 
@@ -46,7 +46,7 @@ module Spree
       check_address_match details["billing"], order.bill_address, :billing_address
     end
 
-    def matching_shipping_address?
+    def check_matching_shipping_address
       # ensure we have a standardized address format
       details['shipping']['address'] = normalize_affirm_address details['shipping']['address']
 
@@ -54,13 +54,13 @@ module Spree
       check_address_match details["shipping"], order.ship_address, :shipping_address
     end
 
-    def matching_billing_email?
-      unless details["billing"]["email"].nil? or details["billing"]["email"] == order.email
+    def check_matching_billing_email
+      if details["billing"]["email"].present? and details["billing"]["email"].casecmp(order.email) != 0
         errors.add :billing_email, "Billing email mismatch"
       end
     end
 
-    def matching_product_key?
+    def check_matching_product_key
       if details["config"]["financial_product_key"] != payment_method.preferred_product_key
         errors.add :financial_product_key, "Product key mismatch"
       end

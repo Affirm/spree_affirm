@@ -10,11 +10,11 @@ module Spree
     end
 
     def payment_source_class
-        Spree::AffirmCheckout
+      Spree::AffirmCheckout
     end
 
     def source_required?
-        true
+      true
     end
 
     def method_type
@@ -26,7 +26,7 @@ module Spree
     end
 
     def supports?(source)
-        source.is_a? payment_source_class
+      source.is_a? payment_source_class
     end
   end
 end
