@@ -12,7 +12,7 @@ def BASE_CHECKOUT_DETAILS
         "city"=> "San Francisco",
         "street1"=> "12345 Main",
         "street2"=> "300",
-        "region1_code"=> "CA",
+        "region1_code"=> "AL",
         "postal_code"=> "55555",
         "country_code"=> "USA",
         "for_billing"=> true,
@@ -45,7 +45,7 @@ def BASE_CHECKOUT_DETAILS
         "city"=> "San Francisco",
         "street1"=> "12345 Main Street",
         "street2"=> "300",
-        "region1_code"=> "CA",
+        "region1_code"=> "AL",
         "postal_code"=> "94110",
         "country_code"=> "USA",
         "validation_source"=> 3

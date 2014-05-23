@@ -1,5 +1,7 @@
 module Spree
-  class AffirmController < StoreController
+  class AffirmController < Spree::StoreController
+    helper 'spree/orders'
+
     #the confirm will do it's own protection by making calls to affirm
     protect_from_forgery :except => [:confirm]
 
