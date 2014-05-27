@@ -83,19 +83,52 @@
       ]
     });
 
-    /*****************************************************\
-        handle continue button clicks with .open()
-    \*****************************************************/
-    window.AffirmPaymentMethods = {};
 
+    /* wait for the DOM to be ready */
     affirm.ui.ready(function(){
       $(function() {
-        $('.continue').click(function(e){
+
+        /*****************************************************\
+            setup loading and cancel events for the form
+        \*****************************************************/
+        affirm.checkout.on("cancel", function(){
+          $("#checkout_form_payment input.disabled")
+            .attr("disabled", false)
+            .removeClass("disabled");
+        });
+
+        var button_text = $("#checkout_form_payment input").val();
+
+        $("#checkout_form_payment input[type='submit']").on("loading", function(){
+          button_text = $(this).val();
+          $(this).val("Loading...");
+        })
+
+        .on("done_loading", function(){
+          $(this).val(button_text);
+        });
+
+
+
+        /*****************************************************\
+            handle continue button clicks with .open()
+        \*****************************************************/
+        $('#checkout_form_payment').submit(function(e){
           var checkedPaymentMethod = $('div[data-hook="checkout_payment_step"] input[type="radio"]:checked').val();
 
           if (window.AffirmPaymentMethods[checkedPaymentMethod]) {
+            var $submit_button = $(this).find("input[type='submit']");
+
+            // update with checkout method details
             affirm.checkout(window.AffirmPaymentMethods[checkedPaymentMethod]);
-            affirm.checkout.open();
+
+            // show the loading message
+            $submit_button.trigger("loading");
+
+            // submit the checkout
+            affirm.checkout.open({
+              target: $submit_button
+            });
 
             e.preventDefault();
             return false;
@@ -103,6 +136,8 @@
         });
       });
     });
+
+    window.AffirmPaymentMethods = {};
   }
 
 
