@@ -18,14 +18,14 @@ module ActiveMerchant #:nodoc:
 
       def authorize(money, affirm_source, options = {})
         result = commit(:post, "", {"checkout_token"=>affirm_source.token}, options, true)
-        Rails.logger.info "comparing #{result.params["amount"]} against #{money} cents: #{amount(money)}"
+        return result unless result.success?
+
         if amount(money).to_i != result.params["amount"].to_i
           return Response.new(false,
                               "Auth amount does not match charge amount",
                               result.params
                              )
-        end
-        if result.params["pending"].to_s != "true"
+        elsif result.params["pending"].to_s != "true"
           return Response.new(false,
                               "There was an error authorizing this Charge",
                               result.params
@@ -51,11 +51,13 @@ module ActiveMerchant #:nodoc:
         post = {:amount => amount(money)}
         set_charge(charge_source)
         result = commit(:post, "#{@charge_id}/capture", post, options)
+        return result unless result.success?
+
         if amount(money).to_i != result.params["amount"].to_i
-            return Response.new(false,
-                       "Capture amount does not match charge amount",
-                       result.params
-                      )
+          return Response.new(false,
+                "Capture amount does not match charge amount",
+                result.params
+                )
         end
         result
       end
@@ -149,7 +151,7 @@ module ActiveMerchant #:nodoc:
               response = json_error(raw_response)
           end
 
-          puts "Affirm response is #{response.inspect}"
+          Rails.logger.info "Affirm response is #{response.inspect}"
           if success && ret_charge
               @charge_id = response["id"]
           end
