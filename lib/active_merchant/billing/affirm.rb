@@ -75,8 +75,8 @@ module ActiveMerchant #:nodoc:
 
       def credit(money, charge_source, options = {})
           set_charge(charge_source)
-          return Response.new(true ,
-                       "Credited Zero amount",
+          return Response.new(false ,
+                       "Cannot credit zero amount",
                        {},
                        :authorization => @charge_id,
                       ) unless money > 0
