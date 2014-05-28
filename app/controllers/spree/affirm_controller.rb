@@ -54,16 +54,10 @@ module Spree
 
       order.next
 
-      if order.complete?
-        flash.notice = Spree.t(:order_processed_successfully)
-        flash[:commerce_tracking] = "nothing special"
-      end
-
       redirect_to checkout_state_path(order.state)
     end
 
     def cancel
-      flash[:notice] = "Don't want to use Affirm? No problems."
       redirect_to checkout_state_path(current_order.state)
     end
 

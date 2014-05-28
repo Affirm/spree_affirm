@@ -18,7 +18,7 @@ module ActiveMerchant #:nodoc:
 
       def authorize(money, affirm_source, options = {})
         result = commit(:post, "", {"checkout_token"=>affirm_source.token}, options, true)
-        puts "comparing #{result.params["amount"]} against #{money} cents: #{amount(money)}"
+        Rails.logger.info "comparing #{result.params["amount"]} against #{money} cents: #{amount(money)}"
         if amount(money).to_i != result.params["amount"].to_i
           return Response.new(false,
                               "Auth amount does not match charge amount",
@@ -61,13 +61,13 @@ module ActiveMerchant #:nodoc:
       end
 
       def void(charge_source, options = {})
-        puts "VOID  charge: #{charge_source.inspect}"
+        Rails.logger.info "VOID  charge: #{charge_source.inspect}"
         set_charge(charge_source)
         commit(:post, "#{@charge_id}/void", {}, options)
       end
 
       def refund(money, charge_source, options = {})
-        puts "REFUND  amount: #{money.inspect} charge: #{charge_source.inspect}"
+        Rails.logger.info "REFUND  amount: #{money.inspect} charge: #{charge_source.inspect}"
         post = {:amount => amount(money)}
         set_charge(charge_source)
         commit(:post, "#{@charge_id}/refund", post, options)
@@ -137,8 +137,8 @@ module ActiveMerchant #:nodoc:
           raw_response = response = nil
           success = false
           begin
-              puts "Making a #{method} to #{root_url + url} with #{post_data(parameters)}"
-              puts "headers are #{headers.inspect}"
+              Rails.logger.info "Making a #{method} to #{root_url + url} with #{post_data(parameters)}"
+              Rails.logger.info "headers are #{headers.inspect}"
               raw_response = ssl_request(method, root_url + url, post_data(parameters), headers)
               response = parse(raw_response)
               success = !response.key?("status_code") && (!ret_charge || response.key?("id"))

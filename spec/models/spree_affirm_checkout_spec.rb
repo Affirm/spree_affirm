@@ -35,6 +35,13 @@ describe Spree::AffirmCheckout do
         valid_checkout.check_valid_products
         expect(valid_checkout.errors.size).to be(0)
       end
+
+      it "does not throw an error for case senstive name mismatches" do
+        _checkout = FactoryGirl.build(:affirm_checkout, full_name_case_mismatch: true)
+        _checkout.check_matching_billing_address
+        expect(_checkout.errors.size).to be(0)
+
+      end
     end
 
     context "with an extra product is in the checkout details" do

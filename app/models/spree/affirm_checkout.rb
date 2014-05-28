@@ -139,8 +139,8 @@ module Spree
 
       # test affirm names with full name
       elsif affirm_address["name"]["full"].present? and
-          !(affirm_address["name"]["full"].include?(spree_address.firstname) and
-            affirm_address["name"]["full"].include?(spree_address.lastname))
+          !(affirm_address["name"]["full"].downcase.include?(spree_address.firstname.downcase) and
+            affirm_address["name"]["full"].downcase.include?(spree_address.lastname.downcase))
 
         errors.add field, "Full name mismatch"
       end

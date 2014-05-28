@@ -94,6 +94,7 @@ FactoryGirl.define do
       missing_line_item false
       quantity_mismatch false
       price_mismatch false
+      full_name_case_mismatch false
     end
 
     after(:build) do |checkout, evaluator|
@@ -103,6 +104,14 @@ FactoryGirl.define do
       # product keys
       unless evaluator.product_key_mismatch
         _details['config']['financial_product_key'] = checkout.payment_method.preferred_product_key
+      end
+
+      # case mismatch
+      unless evaluator.full_name_case_mismatch
+        _details['billing']['name'] = {
+          "full" => checkout.order.bill_address.firstname.upcase + " " +
+                    checkout.order.bill_address.lastname.upcase
+        }
       end
 
       # shipping address
