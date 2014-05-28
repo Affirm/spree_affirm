@@ -68,7 +68,8 @@ module ActiveMerchant #:nodoc:
 
       def refund(money, charge_source, options = {})
         Rails.logger.info "REFUND  amount: #{money.inspect} charge: #{charge_source.inspect}"
-        post = {:amount => amount(money)}
+        post = {}
+        post[:amount] = amount(money) unless money.nil?
         set_charge(charge_source)
         commit(:post, "#{@charge_id}/refund", post, options)
       end
@@ -81,6 +82,11 @@ module ActiveMerchant #:nodoc:
                        :authorization => @charge_id,
                       ) unless money > 0
           refund(money, charge_source, options)
+      end
+
+      def cancel(charge_source, options = {})
+        set_charge(charge_source)
+        refund(nil, charge_source, options)
       end
 
       def root_url
