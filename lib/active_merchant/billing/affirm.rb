@@ -48,7 +48,7 @@ module ActiveMerchant #:nodoc:
       end
 
       def capture(money, charge_source, options = {})
-        post = {amount: amount(money)}
+        post = {:amount => amount(money)}
         set_charge(charge_source)
         result = commit(:post, "#{@charge_id}/capture", post, options)
         if amount(money).to_i != result.params["amount"].to_i
@@ -68,15 +68,19 @@ module ActiveMerchant #:nodoc:
 
       def refund(money, charge_source, options = {})
         Rails.logger.info "REFUND  amount: #{money.inspect} charge: #{charge_source.inspect}"
-        post = {}
-        post[:amount] = amount(money) if money.to_i == money
+        post = {:amount => amount(money)}
         set_charge(charge_source)
         commit(:post, "#{@charge_id}/refund", post, options)
       end
 
       def credit(money, charge_source, options = {})
-        set_charge(charge_source)
-        refund(money, charge_source, options)
+          set_charge(charge_source)
+          return Response.new(true ,
+                       "Credited Zero amount",
+                       {},
+                       :authorization => @charge_id,
+                      ) unless money > 0
+          refund(money, charge_source, options)
       end
 
       def root_url
