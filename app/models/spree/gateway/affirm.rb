@@ -28,5 +28,9 @@ module Spree
     def supports?(source)
       source.is_a? payment_source_class
     end
+
+    def self.version
+      Gem::Specification.find_by_name('spree_affirm').version.to_s
+    end
   end
 end

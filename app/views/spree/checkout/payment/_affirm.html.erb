@@ -55,6 +55,18 @@
         }
       },
 
+
+      meta: {
+        source: {
+          client_name: "spree_affirm",
+          version: "Spree::Gateway::Affirm.version",
+          data: {
+            is_logged_in: <%= !!spree_current_user %>,
+            spree_version: "<%= Spree.version %>"
+          }
+        }
+      },
+
       merchant: {
         user_confirmation_url:    "<%= confirm_affirm_url(:payment_method_id => payment_method.id) %>",
         user_cancel_url:          "<%= cancel_affirm_url(:payment_method_id => payment_method.id) %>",
