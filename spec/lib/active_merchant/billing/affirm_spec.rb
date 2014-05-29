@@ -266,6 +266,19 @@ describe ActiveMerchant::Billing::Affirm do
         result = affirm_payment.payment_method.provider.commit(:post, "test")
         expect(result.success?).to be(false)
       end
+
+      context "when the error response has malformed json" do
+        it "returns an invalid response error" do
+          http_response = double()
+          http_response.stub(:code).and_return('400')
+          http_response.stub(:body).and_return("{///xdf2fas!!+")
+          affirm_payment.payment_method.provider.should_receive(:parse).and_raise JSON::ParserError
+          affirm_payment.payment_method.provider.should_receive(:ssl_request).and_raise ActiveMerchant::ResponseError.new(http_response)
+          result = affirm_payment.payment_method.provider.commit(:post, "test")
+          expect(result.success?).to be(false)
+          expect(result.params['error']['message']).to match(/The raw response returned by the API was/)
+        end
+      end
     end
 
 
@@ -274,6 +287,7 @@ describe ActiveMerchant::Billing::Affirm do
         affirm_payment.payment_method.provider.should_receive(:ssl_request).and_raise JSON::ParserError
         result = affirm_payment.payment_method.provider.commit(:post, "test")
         expect(result.success?).to be(false)
+        expect(result.params['error']['message']).to match(/The raw response returned by the API was/)
       end
     end
   end
