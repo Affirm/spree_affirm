@@ -61,6 +61,15 @@
           client_name: "spree_affirm",
           version: "<%= Spree::Gateway::Affirm.version %>",
           data: {
+            <% if spree_current_user %>
+              order_count: "<%= spree_current_user.orders.complete.count %>",
+              account_created: "<%= spree_current_user.created_at %>",
+
+              <% if spree_current_user.orders.complete.any? %>
+                last_order_date: "<%= spree_current_user.orders.complete.last.completed_at %>",
+              <% end %>
+
+            <% end %>
             is_logged_in: <%= !!spree_current_user %>,
             spree_version: "<%= Spree.version %>"
           }
