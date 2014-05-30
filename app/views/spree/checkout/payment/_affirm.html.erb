@@ -59,7 +59,7 @@
       meta: {
         source: {
           client_name: "spree_affirm",
-          version: "Spree::Gateway::Affirm.version",
+          version: "<%= Spree::Gateway::Affirm.version %>",
           data: {
             is_logged_in: <%= !!spree_current_user %>,
             spree_version: "<%= Spree.version %>"
