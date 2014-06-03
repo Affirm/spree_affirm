@@ -65,8 +65,19 @@ describe Spree::Gateway::Affirm do
         it "calls credit! on the payment with the credit_allowed amount" do
           Spree::Payment.stub_chain(:valid, :where, :first).and_return(affirm_payment)
           affirm_payment.stub(:can_credit?).and_return(true)
-          expect(affirm_payment).to receive(:credit!).with(affirm_payment.credit_allowed).and_return false
+          expect(affirm_payment).to receive(:credit!).and_return false
           affirm_payment.payment_method.cancel affirm_payment.response_code
+        end
+
+        it "creates an adjustment for the -credit_allowed amount" do
+          Spree::Payment.stub_chain(:valid, :where, :first).and_return(affirm_payment)
+          affirm_payment.stub(:can_credit?).and_return(true)
+          expect(affirm_payment).to receive(:credit!).and_return false
+          _payment_amount = affirm_payment.credit_allowed
+          affirm_payment.payment_method.cancel affirm_payment.response_code
+
+          expect(affirm_payment.order.adjustments.count).to be > 0
+          expect(affirm_payment.order.adjustments.last.amount).to eq(-_payment_amount)
         end
       end
 
