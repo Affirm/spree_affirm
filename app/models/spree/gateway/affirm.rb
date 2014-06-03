@@ -32,5 +32,22 @@ module Spree
     def self.version
       Gem::Specification.find_by_name('spree_affirm').version.to_s
     end
+
+    def cancel(charge_ari)
+      _payment = Spree::Payment.valid.where(
+        response_code: charge_ari,
+        source_type:   "#{payment_source_class}"
+      ).first
+
+      return if _payment.nil?
+
+      if _payment.pending?
+        _payment.void_transaction!
+
+      elsif _payment.completed? and _payment.can_credit?
+        _payment.credit! _payment.credit_allowed.to_f
+
+      end
+    end
   end
 end

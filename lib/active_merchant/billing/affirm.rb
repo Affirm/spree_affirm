@@ -63,13 +63,11 @@ module ActiveMerchant #:nodoc:
       end
 
       def void(charge_source, options = {})
-        Rails.logger.info "VOID  charge: #{charge_source.inspect}"
         set_charge(charge_source)
         commit(:post, "#{@charge_id}/void", {}, options)
       end
 
       def refund(money, charge_source, options = {})
-        Rails.logger.info "REFUND  amount: #{money.inspect} charge: #{charge_source.inspect}"
         post = {:amount => amount(money)}
         set_charge(charge_source)
         commit(:post, "#{@charge_id}/refund", post, options)
@@ -139,8 +137,6 @@ module ActiveMerchant #:nodoc:
           raw_response = response = nil
           success = false
           begin
-              Rails.logger.info "Making a #{method} to #{root_url + url} with #{post_data(parameters)}"
-              Rails.logger.info "headers are #{headers.inspect}"
               raw_response = ssl_request(method, root_url + url, post_data(parameters), headers)
               response = parse(raw_response)
               success = !response.key?("status_code") && (!ret_charge || response.key?("id"))
@@ -151,7 +147,6 @@ module ActiveMerchant #:nodoc:
               response = json_error(raw_response)
           end
 
-          Rails.logger.info "Affirm response is #{response.inspect}"
           if success && ret_charge
               @charge_id = response["id"]
           end
