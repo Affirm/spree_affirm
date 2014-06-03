@@ -18,13 +18,13 @@
         set the shared checkout data
     \*****************************************************/
     affirm.checkout({
+      total:                <%= (@order.total * 100).to_i %>,
       currency:             "USD",
-      tax_amount:           <%= @order.additional_tax_total * 100 %>,
+      tax_amount:           <%= (@order.additional_tax_total * 100).to_i %>,
       checkout_id:          "<%= @order.number %>",
       discount_code:        "<%= @order.coupon_code %>",
       shipping_type:        "<%= @order.shipments.first.shipping_method.name if @order.shipments %>",
-      shipping_amount:      <%= @order.shipment_total * 100 %>,
-      misc_fee_amount:      <%= (@order.adjustment_total - @order.additional_tax_total) * 100 %>,
+      shipping_amount:      <%= (@order.shipment_total * 100).to_i %>,
 
       shipping: {
         name: {
@@ -84,6 +84,18 @@
       config: {
         required_billing_fields:      "name,address,email",
       },
+
+
+      <% if @order.promotions.any? %>
+      discounts: {
+        <% @order.promotions.each do |promo| %>
+          "<%= promo.code %>": {
+            discount_amount:       <%= (0-promo.credits.sum(:amount)*100).to_i %>,
+            discount_display_name: "<%= promo.name %>"
+          },
+        <% end %>
+      },
+      <% end %>
 
       items: [
         <% @order.line_items.each do |item| %>
