@@ -1,22 +1,19 @@
 <script>
-    function showAffirmError(method_id)
-    {
-        if (method_id == AffirmPaymentMethodID)
-        {
-            $('.payment-method-settings').prepend("<strong id=\"affirm-warning\">You cannot charge Affirm accounts through the admin backend at this time.</strong>");
-        }
-        else
-        {
-            $('#affirm-warning').remove();
-        }
+  function showAffirmError(method_id) {
+    if (method_id === AffirmPaymentMethodID) {
+      $('.payment-method-settings').prepend("<strong id=\"affirm-warning\">You cannot charge Affirm accounts through the admin backend at this time.</strong>");
+    } else {
+      $('#affirm-warning').remove();
     }
-    AffirmPaymentMethodID = "<%= payment_method.id %>"
+  }
+  AffirmPaymentMethodID = "<%= payment_method.id %>"
 
-    $(document).ready(function() {
-        var checked_method_id = $('[data-hook="payment_method_field"] input[type="radio"]:checked').val();
-        showAffirmError(checked_method_id);
-      $('[data-hook="payment_method_field"] input[type="radio"]').click(function (e) {
-        showAffirmError($(e.target).val());
-      });
-    })
+  $(function() {
+    var checked_method_id = $('[data-hook="payment_method_field"] input[type="radio"]:checked').val();
+    showAffirmError(checked_method_id);
+
+    $('[data-hook="payment_method_field"] input[type="radio"]').click(function (e) {
+      showAffirmError($(e.target).val());
+    });
+  })
 </script>

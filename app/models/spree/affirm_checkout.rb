@@ -7,6 +7,8 @@ module Spree
              :check_matching_billing_address, :check_matching_billing_email,
              :check_matching_product_key
 
+    scope :with_payment_profile, all
+
     def details
       @details ||= payment_method.provider.get_checkout token
     end

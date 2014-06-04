@@ -1,11 +1,21 @@
 require 'spec_helper'
 
 
-
-
 describe Spree::AffirmCheckout do
   let(:valid_checkout) { FactoryGirl.create(:affirm_checkout) }
   let(:affirm_payment) { FactoryGirl.create(:affirm_payment) }
+
+
+  describe "scopes" do
+    describe "with_payment_profile" do
+      it "returns all" do
+        expect(Spree::AffirmCheckout.all).to eq(Spree::AffirmCheckout.with_payment_profile)
+      end
+    end
+
+
+  end
+
 
   describe '#details' do
     it "calls get_checkout from the payment provider exactly once" do
