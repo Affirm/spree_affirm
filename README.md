@@ -1,8 +1,6 @@
 SpreeAffirm
 ===========
 
-Introduction goes here.
-
 Installation
 ------------
 
