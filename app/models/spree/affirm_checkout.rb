@@ -3,14 +3,22 @@ module Spree
     belongs_to :payment_method
     belongs_to :order
 
-    validate :check_valid_products, :check_matching_shipping_address,
-             :check_matching_billing_address, :check_matching_billing_email,
-             :check_matching_product_key
+    validate :validate_checkout_matches_order
 
     scope :with_payment_profile, all
 
     def details
       @details ||= payment_method.provider.get_checkout token
+    end
+
+    def validate_checkout_matches_order
+      return if self.id
+
+      check_valid_products
+      check_matching_shipping_address
+      check_matching_billing_address
+      check_matching_billing_email
+      check_matching_product_key
     end
 
     def check_valid_products
@@ -24,14 +32,14 @@ module Spree
 
         # check that the line item sku exists in the affirm checkout
         if !(_item = details["items"][line_item.variant.sku])
-          errors.add line_item.variant.sku.to_sym, "Line Item not in checkout details"
+          errors.add :line_items, "Line Item not in checkout details"
 
         # check quantity & price
         elsif _item["qty"].to_i   != line_item.quantity.to_i
-          errors.add line_item.variant.sku.to_sym, "Quantity mismatch"
+          errors.add :line_items, "Quantity mismatch"
 
         elsif _item["unit_price"].to_i != (line_item.price*100).to_i
-          errors.add line_item.variant.sku.to_sym, "Price mismatch"
+          errors.add :line_items, "Price mismatch"
 
         end
       end

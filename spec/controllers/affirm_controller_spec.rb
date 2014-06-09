@@ -32,7 +32,6 @@ describe Spree::AffirmController do
         end
       end
 
-
       context "when the order is complete" do
         before do
           checkout.order.state = 'complete'

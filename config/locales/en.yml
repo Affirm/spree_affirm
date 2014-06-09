@@ -2,18 +2,30 @@
 # See https://github.com/svenfuchs/rails-i18n/tree/master/rails%2Flocale for starting points.
 
 en:
-  hello: "Hello world"
-  "Order size mismatch": "Order size mismatch"
-  "Line Item not in checkout details": "Line Item not in checkout details"
-  "Quantity mismatch": "Quantity mismatch"
-  "Price mismatch": "Price mismatch"
-  "Billing email mismatch": "Billing email mismatch"
-  "Product key mismatch": "Product key mismatch"
-  "city mismatch": "city mismatch"
-  "street1 mismatch": "street1 mismatch"
-  "street2 mismatch": "street2 mismatch"
-  "postal_code mismatch": "postal_code mismatch"
-  "region1_code mismatch": "region1_code mismatch"
-  "First/Last name mismatch": "First/Last name mismatch"
-  "Full name mismatch": "Full name mismatch"
+  spree:
+    affirm_checkout: "Affirm Checkout"
+  activerecord:
+    models:
+      "spree/affirm_checkout":
+        "Order size mismatch": "Order size mismatch"
+        "Line Item not in checkout details": "Line Item not in checkout details"
+        "Quantity mismatch": "Quantity mismatch"
+        "Price mismatch": "Price mismatch"
+        "Billing email mismatch": "Billing email mismatch"
+        "Product key mismatch": "Product key mismatch"
+        "city mismatch": "city mismatch"
+        "street1 mismatch": "street1 mismatch"
+        "street2 mismatch": "street2 mismatch"
+        "postal_code mismatch": "postal_code mismatch"
+        "region1_code mismatch": "region1_code mismatch"
+        "First/Last name mismatch": "First/Last name mismatch"
+        "Full name mismatch": "Full name mismatch"
+
+    attributes:
+      "spree/affirm_checkout":
+        line_items: "items"
+        billing_address: "billing address"
+        shipping_address: "shipping address"
+        billing_email: "email"
+        financial_product_key: "Affirm Financial Product"
 
