@@ -38,16 +38,34 @@ describe Spree::AffirmController do
         end
         it "redirects to the current order state" do
           post_request '123456789', checkout.payment_method.id
-          expect(response).to redirect_to(controller.checkout_state_path(checkout.order.state))
+          expect(response).to redirect_to(controller.checkout_state_path('complete'))
         end
       end
 
-      it "creates a new payment" do
-        # expect do
-        post_request "123423423", checkout.payment_method.id
-        # end.to change(checkout.order.payments.count)
+      context "when the order state is payment" do
+        before do
+          checkout.order.state = 'payment'
+        end
 
-        expect(checkout.order.payments.first.source).to eq(checkout)
+        it "creates a new payment" do
+          post_request "123423423", checkout.payment_method.id
+
+          expect(checkout.order.payments.first.source).to eq(checkout)
+        end
+
+        # it "transitions to complete if confirmation is not required" do
+        #   checkout.order.stub confirmation_required?: false
+        #   post_request "123423423", checkout.payment_method.id
+
+        #   expect(checkout.order.state).to eq("complete")
+        # end
+
+        it "transitions to confirm if confirmation is required" do
+          checkout.order.stub confirmation_required?: true
+          post_request "123423423", checkout.payment_method.id
+
+          expect(checkout.order.reload.state).to eq("confirm")
+        end
       end
 
     end

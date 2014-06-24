@@ -52,7 +52,8 @@ module Spree
         source: _affirm_checkout
       })
 
-      order.next
+      # transition to confirm or complete
+      while order.next; end
 
       redirect_to checkout_state_path(order.state)
     end
