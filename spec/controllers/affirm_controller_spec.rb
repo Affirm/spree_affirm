@@ -38,7 +38,7 @@ describe Spree::AffirmController do
         end
         it "redirects to the current order state" do
           post_request '123456789', checkout.payment_method.id
-          expect(response).to redirect_to(controller.checkout_state_path('complete'))
+          expect(response).to redirect_to(controller.order_path(checkout.order))
         end
       end
 

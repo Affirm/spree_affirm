@@ -15,7 +15,7 @@ module Spree
 
       if order.complete?
         flash[:notice] = "Order already completed."
-        return redirect_to checkout_state_path(current_order.state)
+        return redirect_to completion_route order
       end
 
       _affirm_checkout = Spree::AffirmCheckout.new(
@@ -55,7 +55,14 @@ module Spree
       # transition to confirm or complete
       while order.next; end
 
-      redirect_to checkout_state_path(order.state)
+      if order.completed?
+        session[:order_id] = nil
+        flash.notice = Spree.t(:order_processed_successfully)
+        flash[:commerce_tracking] = "nothing special"
+        redirect_to completion_route order
+      else
+        redirect_to checkout_state_path(order.state)
+      end
     end
 
     def cancel
@@ -73,7 +80,7 @@ module Spree
     end
 
     def completion_route(order)
-      order_path(order, :token => order.token)
+      spree.order_path(order)
     end
 
     def generate_spree_address(affirm_address)
