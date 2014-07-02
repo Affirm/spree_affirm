@@ -159,6 +159,16 @@ describe Spree::AffirmCheckout do
         expect(_checkout.errors[:shipping_address]).not_to be_empty
       end
     end
+
+    context "with a missing state" do
+      it "sets an error for the shipping address" do
+        _checkout = FactoryGirl.build(:affirm_checkout)
+        _checkout.order.ship_address.state = nil
+        _checkout.order.ship_address.save
+        _checkout.check_matching_shipping_address
+        expect(_checkout.errors[:shipping_address]).not_to be_empty
+      end
+    end
   end
 
 
