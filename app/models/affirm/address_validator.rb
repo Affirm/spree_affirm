@@ -7,7 +7,7 @@ module Affirm
         "street2"      => 'line2',
         "postal_code"  => 'zipcode',
         "region1_code" => 'state',
-        "country_code" => 'county'
+        "country_code" => 'country'
       }
 
       _address_mapping.each do |key, mapped_key|
