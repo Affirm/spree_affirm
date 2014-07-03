@@ -30,10 +30,16 @@ module Spree
         _affirm_checkout.errors.each do |field, error|
           case field
           when :billing_address
+            # FIXME(brian): pass the phone number to the |order| in a better place
+            phone = order.bill_address.phone
             order.bill_address = generate_spree_address(_affirm_checkout.details['billing'])
+            order.bill_address.phone = phone
 
           when :shipping_address
+            # FIXME(brian): pass the phone number to the |order| in a better place
+            phone = order.shipping_address.phone
             order.ship_address = generate_spree_address(_affirm_checkout.details['shipping'])
+            order.ship_address.phone = phone
 
           when :billing_email
             order.email = _affirm_checkout.details["billing"]["email"]
