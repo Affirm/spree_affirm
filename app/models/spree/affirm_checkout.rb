@@ -7,6 +7,10 @@ module Spree
 
     scope :with_payment_profile, all
 
+    def name
+      "Affirm Checkout"
+    end
+
     def details
       @details ||= payment_method.provider.get_checkout token
     end
