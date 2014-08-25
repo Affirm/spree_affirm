@@ -5,7 +5,7 @@ module Spree
 
     validate :validate_checkout_matches_order
 
-    scope :with_payment_profile, all
+    scope :with_payment_profile, -> { all }
 
     def name
       "Affirm Checkout"
