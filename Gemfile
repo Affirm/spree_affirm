@@ -13,6 +13,7 @@ group :test do
   gem 'simplecov', :require => false
   gem 'simplecov-rcov'
   gem 'database_cleaner'
+  gem 'minitest'
 end
 
 gemspec

@@ -1,5 +1,6 @@
 # Run Coverage report
 require 'simplecov'
+require 'minitest'
 require 'simplecov-rcov'
 
 SimpleCov.formatter = SimpleCov::Formatter::RcovFormatter
