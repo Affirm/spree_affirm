@@ -90,10 +90,10 @@
 
       <% if @order.promotions.any? %>
       discounts: {
-        <% @order.promotions.each do |promo| %>
-          "<%= promo.code %>": {
-            discount_amount:       <%= (0-promo.credits.sum(:amount)*100).to_i %>,
-            discount_display_name: "<%= promo.name %>"
+        <% @order.adjustments.promotion.each do |adjustment| %>
+          "<%= adjustment.label %>": {
+            discount_amount:       <%= (0-adjustment.amount*100).to_i %>,
+            discount_display_name: "<%= adjustment.label %>"
           },
         <% end %>
       },
