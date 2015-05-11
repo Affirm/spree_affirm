@@ -37,11 +37,11 @@ bundle exec rake test_app
 bundle exec rspec spec
 ```
 
-When testing your applications integration with this extension you may use it's factories.
+When testing your applications integration with this extension you may use its factories.
 Simply add this require statement to your spec_helper:
 
 ```ruby
 require 'spree_affirm/factories'
 ```
 
-Copyright (c) 2014 [name of extension creator], released under the New BSD License
+Copyright (c) 2015 Affirm, released under the New BSD License
