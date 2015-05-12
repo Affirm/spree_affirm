@@ -82,7 +82,7 @@ FactoryGirl.define do
     association(:order, factory: :order_with_line_items)
 
 
-    ignore do
+    transient do
       stub_details true
       product_key_mismatch false
       shipping_address_mismatch false
