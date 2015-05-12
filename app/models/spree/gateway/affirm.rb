@@ -47,7 +47,11 @@ module Spree
       elsif _payment.completed? and _payment.can_credit?
 
         # create adjustment
-        _payment.order.adjustments.create label: "Refund - Canceled Order", amount: -_payment.credit_allowed.to_f
+        _payment.order.adjustments.create(
+            label: "Refund - Canceled Order",
+            amount: -_payment.credit_allowed.to_f,
+            order: _payment.order
+        )
         _payment.order.update!
 
         _payment.credit!
