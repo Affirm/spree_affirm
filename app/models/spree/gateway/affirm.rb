@@ -53,9 +53,6 @@ module Spree
             order: _payment.order
         )
         _payment.order.update!
-
-        _payment.credit!
-
       end
     end
   end
