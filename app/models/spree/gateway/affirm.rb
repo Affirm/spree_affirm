@@ -46,7 +46,7 @@ module Spree
 
       elsif _payment.completed? and _payment.can_credit?
         amount = _payment.credit_allowed.to_f
-        # do the credit
+        # do the credit before the update so we don't get incorrect db adjustments
         response = provider.credit(amount, charge_ari)
         # create adjustment
         _payment.order.adjustments.create(
