@@ -45,9 +45,9 @@ module Spree
         _payment.void_transaction!
 
       elsif _payment.completed? and _payment.can_credit?
-        amount = _payment.credit_allowed.to_f
+        amount = BigDecimal.new(_payment.credit_allowed.to_s)
         # do the credit before the update so we don't get incorrect db adjustments
-        response = provider.credit(amount, charge_ari)
+        response = provider.credit((amount*100).to_i, charge_ari)
         # create adjustment
         _payment.order.adjustments.create(
             label: "Refund - Canceled Order",
