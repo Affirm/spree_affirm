@@ -1,12 +1,10 @@
 module Spree
-  class AffirmController < Spree::StoreController
+  class AffirmController < Spree::Api::BaseController
     helper 'spree/orders'
 
-    #the confirm will do it's own protection by making calls to affirm
-    protect_from_forgery :except => [:confirm]
-
     def confirm
-      order = current_order || raise(ActiveRecord::RecordNotFound)
+      authorize! :create, Spree::Order
+      order = find_current_order || raise(ActiveRecord::RecordNotFound)
 
       if !params[:checkout_token]
         flash[:notice] = "Invalid order confirmation data."
@@ -72,10 +70,15 @@ module Spree
     end
 
     def cancel
+      authorize! :update, @order, params[:token]
       redirect_to checkout_state_path(current_order.state)
     end
 
     private
+
+    def find_current_order
+      current_api_user ? current_api_user.orders.incomplete.order(:created_at).last : nil
+    end
 
     def payment_method
       Spree::PaymentMethod.find(params[:payment_method_id])
