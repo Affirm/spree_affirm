@@ -22,7 +22,6 @@ module Spree
       check_matching_shipping_address
       check_matching_billing_address
       check_matching_billing_email
-      check_matching_product_key
     end
 
     def check_valid_products
@@ -71,12 +70,6 @@ module Spree
     def check_matching_billing_email
       if details["billing"]["email"].present? and details["billing"]["email"].casecmp(order.email) != 0
         errors.add :billing_email, "Billing email mismatch"
-      end
-    end
-
-    def check_matching_product_key
-      if details["config"]["financial_product_key"] != payment_method.preferred_product_key
-        errors.add :financial_product_key, "Product key mismatch"
       end
     end
 
