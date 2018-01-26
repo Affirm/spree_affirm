@@ -63,9 +63,9 @@ module Spree
         session[:order_id] = nil
         flash.notice = Spree.t(:order_processed_successfully)
         flash[:order_completed] = true
-        redirect_to completion_route order
+        redirect_to ENV['affirm_completion_url'] || completion_route(order)
       else
-        redirect_to checkout_state_path(order.state)
+        redirect_to ENV['affirm_checkout_url'] || checkout_state_path(order.state)
       end
     end
 
