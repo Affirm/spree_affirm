@@ -20,6 +20,8 @@ module ActiveMerchant #:nodoc:
         result = commit(:post, "", {"checkout_token"=>affirm_source.token}, options, true)
         return result unless result.success?
 
+        ::Rails.logger.info("[Affirm] amount(money).to_i: #{amount(money).to_i}, result.params[\"amount\"].to_i: #{result.params["amount"].to_i}")
+
         if amount(money).to_i != result.params["amount"].to_i
           return Response.new(false,
                               "Auth amount does not match charge amount",
