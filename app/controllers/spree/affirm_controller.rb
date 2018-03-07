@@ -5,12 +5,10 @@ module Spree
       order = find_current_order || raise(ActiveRecord::RecordNotFound)
 
       if !params[:checkout_token]
-        flash[:notice] = "Invalid order confirmation data."
         return redirect_to checkout_state_path(current_order.state)
       end
 
       if order.complete?
-        flash[:notice] = "Order already completed."
         return redirect_to completion_route order
       end
 
@@ -58,9 +56,6 @@ module Spree
       while order.next; end
 
       if order.completed?
-        session[:order_id] = nil
-        flash.notice = Spree.t(:order_processed_successfully)
-        flash[:order_completed] = true
         redirect_to ENV['affirm_completion_url'] || completion_route(order)
       else
         redirect_to ENV['affirm_checkout_url'] || checkout_state_path(order.state)
@@ -73,6 +68,10 @@ module Spree
     end
 
     private
+
+    def checkout_state_path(state)
+      "/checkout/#{state}"
+    end
 
     def find_current_order
       current_api_user ? current_api_user.orders.incomplete.order(:created_at).last : nil
@@ -87,7 +86,7 @@ module Spree
     end
 
     def completion_route(order)
-      spree.order_path(order)
+      "/orders/#{order.number}"
     end
 
     def generate_spree_address(affirm_address)
