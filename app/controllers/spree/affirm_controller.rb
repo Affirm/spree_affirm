@@ -1,7 +1,5 @@
 module Spree
   class AffirmController < Spree::Api::BaseController
-    helper 'spree/orders'
-
     def confirm
       authorize! :create, Spree::Order
       order = find_current_order || raise(ActiveRecord::RecordNotFound)
