@@ -3,6 +3,7 @@ module Spree
     preference :api_key, :string
     preference :secret_key, :string
     preference :server, :string, default: 'www.affirm.com'
+    preference :term, :number, default: 12
     preference :product_key, :string
 
     def provider_class
