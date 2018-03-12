@@ -58,10 +58,14 @@
       },
 
 
+      metadata: {
+            "platform_type": "spree_affirm",
+            "platform_version": "<%= Spree.version %>",
+            "platform_affirm": "<%= Spree::Gateway::Affirm.version %>",
+          },
+
       meta: {
         source: {
-          client_name: "spree_affirm",
-          version: "<%= Spree::Gateway::Affirm.version %>",
           data: {
             <% if spree_current_user %>
               order_count: "<%= spree_current_user.orders.complete.count %>",
@@ -73,7 +77,6 @@
 
             <% end %>
             is_logged_in: <%= !!spree_current_user %>,
-            spree_version: "<%= Spree.version %>"
           }
         }
       },
