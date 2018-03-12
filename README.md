@@ -18,6 +18,10 @@ Installation
 
 4. Restart your server
 
+Documentation
+------------------
+https://docs.affirm.com/Spree
+
 ## Contributing
 
 1. Fork it
