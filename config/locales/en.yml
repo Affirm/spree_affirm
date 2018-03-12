@@ -12,7 +12,6 @@ en:
         "Quantity mismatch": "Quantity mismatch"
         "Price mismatch": "Price mismatch"
         "Billing email mismatch": "Billing email mismatch"
-        "Product key mismatch": "Product key mismatch"
         "city mismatch": "city mismatch"
         "street1 mismatch": "street1 mismatch"
         "street2 mismatch": "street2 mismatch"
@@ -27,5 +26,4 @@ en:
         billing_address: "billing address"
         shipping_address: "shipping address"
         billing_email: "email"
-        financial_product_key: "Affirm Financial Product"
 
