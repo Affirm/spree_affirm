@@ -1,8 +1,8 @@
 source 'https://rubygems.org'
 
-gem 'spree', github: 'spree/spree', branch: '2-4-stable'
-gem 'spree_gateway', github: 'spree/spree_gateway', branch: '2-4-stable'
-gem 'spree_auth_devise', github: 'spree/spree_auth_devise', branch: '2-4-stable'
+gem 'spree', github: 'spree/spree', branch: 'master'
+gem 'spree_gateway', github: 'spree/spree_gateway', branch: 'master'
+gem 'spree_auth_devise', github: 'spree/spree_auth_devise', branch: 'master'
 
 group :test do
   gem 'coffee-rails'
