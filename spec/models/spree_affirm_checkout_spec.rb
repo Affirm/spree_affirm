@@ -180,27 +180,6 @@ describe Spree::AffirmCheckout do
     end
   end
 
-
-  describe "check_matching_product_key" do
-    context "with a matching product key" do
-      it "does not set an error for the financial_product_key" do
-        valid_checkout.check_matching_product_key
-        expect(valid_checkout.errors[:financial_product_key]).to be_empty
-      end
-    end
-
-
-    context "with a mistmatched product key" do
-      it "adds an error for financial_product_key" do
-        _checkout = FactoryGirl.build(:affirm_checkout, product_key_mismatch: true)
-        _checkout.check_matching_product_key
-        expect(_checkout.errors[:financial_product_key]).not_to be_empty
-      end
-    end
-  end
-
-
-
   describe "actions" do
 
     describe "#actions" do

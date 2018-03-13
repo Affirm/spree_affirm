@@ -12,7 +12,7 @@
     \*****************************************************/
     var _affirm_config = {
       public_api_key: "<%= payment_method.preferred_api_key %>",
-      script: "https://<%= payment_method.preferred_server %>/js/v2/affirm.js"
+      script: "https://<%= payment_method.preferences[:test_mode] ? 'cdn1-sandbox.affirm.com' : 'cdn1.affirm.com' %>/js/v2/affirm.js"
     };
     (function(l,g,m,e,a,f,b){var d,c=l[m]||{},h=document.createElement(f),n=document.getElementsByTagName(f)[0],k=function(a,b,c){return function(){a[b]._.push([c,arguments])}};c[e]=k(c,e,"set");d=c[e];c[a]={};c[a]._=[];d._=[];c[a][b]=k(c,a,b);a=0;for(b="set add save post open empty reset on off trigger ready setProduct".split(" ");a<b.length;a++)d[b[a]]=k(c,e,b[a]);a=0;for(b=["get","token","url","items"];a<b.length;a++)d[b[a]]=function(){};h.async=!0;h.src=g[f];n.parentNode.insertBefore(h,n);delete g[f];d(g);l[m]=c})(window,_affirm_config,"affirm","checkout","ui","script","ready");
 
@@ -23,7 +23,7 @@
       total:                <%= (@order.total * 100).to_i %>,
       currency:             "USD",
       tax_amount:           <%= (@order.additional_tax_total * 100).to_i %>,
-      checkout_id:          "<%= @order.number %>",
+      order_id:             "<%= @order.number %>",
       discount_code:        "<%= @order.coupon_code %>",
       shipping_type:        "<%= @order.shipments.first.shipping_method.name if @order.shipments.exists? %>",
       shipping_amount:      <%= (@order.shipment_total * 100).to_i %>,
@@ -58,10 +58,14 @@
       },
 
 
+      metadata: {
+            "platform_type": "Spree Commerce",
+            "platform_version": "<%= Spree.version %>",
+            "platform_affirm": "<%= Spree::Gateway::Affirm.version %>",
+          },
+
       meta: {
         source: {
-          client_name: "spree_affirm",
-          version: "<%= Spree::Gateway::Affirm.version %>",
           data: {
             <% if spree_current_user %>
               order_count: "<%= spree_current_user.orders.complete.count %>",
@@ -73,7 +77,6 @@
 
             <% end %>
             is_logged_in: <%= !!spree_current_user %>,
-            spree_version: "<%= Spree.version %>"
           }
         }
       },
@@ -182,8 +185,7 @@
       clicked
   \*****************************************************/
   window.AffirmPaymentMethods["<%= payment_method.id %>"] = {
-    public_api_key:           "<%= payment_method.preferred_api_key %>",
-    financial_product_key:    "<%= payment_method.preferred_product_key %>"
+    public_api_key:           "<%= payment_method.preferred_api_key %>"
   };
 
 }());

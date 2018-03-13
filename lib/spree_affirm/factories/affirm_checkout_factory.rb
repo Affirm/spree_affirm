@@ -62,8 +62,6 @@ def BASE_CHECKOUT_DETAILS
     "misc_fee_amount"=> 0,
     "shipping_type"=> "Free National UPS",
     "config"=> {
-      "financial_product_key"=> "XXXXXXXXXXXXXXX",
-      "financial_product_type"=> "splitpay",
       "required_billing_fields"=> [
         "name",
         "address",
@@ -84,7 +82,6 @@ FactoryGirl.define do
 
     transient do
       stub_details true
-      product_key_mismatch false
       shipping_address_mismatch false
       billing_address_mismatch false
       alternate_billing_address_format false
@@ -100,11 +97,6 @@ FactoryGirl.define do
     after(:build) do |checkout, evaluator|
 
       _details = BASE_CHECKOUT_DETAILS()
-
-      # product keys
-      unless evaluator.product_key_mismatch
-        _details['config']['financial_product_key'] = checkout.payment_method.preferred_product_key
-      end
 
       # case mismatch
       unless evaluator.full_name_case_mismatch

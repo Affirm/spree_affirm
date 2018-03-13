@@ -7,12 +7,12 @@ Gem::Specification.new do |s|
   s.name        = 'spree_affirm'
   s.version     = SpreeAffirm::VERSION
   s.summary     = 'Affirm Spree Payment Gateway'
-  s.description = 'Affirm payment Gateway for spree'
+  s.description = 'Affirm payment Gateway for Spree'
   s.required_ruby_version = '>= 1.9.3'
 
-  s.author    = 'Yu Pan'
-  s.email     = 'yu.pan@affirm.com'
-  s.homepage  = 'http://www.spreecommerce.com'
+  s.author    = 'Affirm'
+  s.email     = 'mts@affirm.com'
+  s.homepage  = 'http://www.affirm.com'
 
   s.files       = `git ls-files`.split("\n")
   s.test_files  = `git ls-files -- {test,spec,features}/*`.split("\n")
