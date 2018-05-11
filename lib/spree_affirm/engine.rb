@@ -25,3 +25,5 @@ module SpreeAffirm
     end
   end
 end
+
+require 'active_merchant/billing/affirm'
