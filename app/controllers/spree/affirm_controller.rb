@@ -5,7 +5,7 @@ module Spree
       order = find_current_order || raise(ActiveRecord::RecordNotFound)
 
       if !params[:checkout_token]
-        return redirect_to checkout_state_path(current_order.state)
+        return redirect_to checkout_state_path(order.state)
       end
 
       if order.complete?
@@ -56,15 +56,15 @@ module Spree
       while order.next; end
 
       if order.completed?
-        redirect_to ENV['affirm_completion_url'] || completion_route(order)
+        redirect_to ENV['AFFIRM_COMPLETION_URL'] || completion_route(order)
       else
-        redirect_to ENV['affirm_checkout_url'] || checkout_state_path(order.state)
+        redirect_to ENV['AFFIRM_CHECKOUT_URL'] || checkout_state_path(order.state)
       end
     end
 
     def cancel
-      authorize! :update, @order, params[:token]
-      redirect_to checkout_state_path(current_order.state)
+      order = find_current_order || raise(ActiveRecord::RecordNotFound)
+      redirect_to checkout_state_path(order.state)
     end
 
     private
