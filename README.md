@@ -18,6 +18,10 @@ Installation
 
 4. Restart your server
 
+Documentation
+------------------
+https://docs.affirm.com/Spree
+
 ## Contributing
 
 1. Fork it
@@ -44,4 +48,4 @@ Simply add this require statement to your spec_helper:
 require 'spree_affirm/factories'
 ```
 
-Copyright (c) 2015 Affirm, released under the New BSD License
+Copyright (c) 2018 Affirm, released under the New BSD License
