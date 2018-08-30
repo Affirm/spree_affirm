@@ -86,7 +86,7 @@ module Spree
     end
 
     def completion_route(order)
-      "/orders/#{order.number}"
+      "/account/orders/#{order.number}"
     end
 
     def generate_spree_address(affirm_address)
