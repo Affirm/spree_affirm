@@ -25,7 +25,6 @@ module Spree
     end
 
     def check_valid_products
-      Rails.logger.info "[AFFIRM] #check_valid_products. details: #{details['items'].inspect}, order: #{order.line_items.inspect}"
       # ensure the number of line items matches
       if details["items"].size != order.line_items.size
         errors.add :line_items, "Order size mismatch"

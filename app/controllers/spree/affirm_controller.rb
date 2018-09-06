@@ -36,7 +36,7 @@ module Spree
             order.ship_address.phone = phone
 
           when :billing_email
-            order.email = _affirm_checkout.details["billing"]["email"]
+            order.email = _affirm_checkout.details['billing']['email']
 
           end
         end
