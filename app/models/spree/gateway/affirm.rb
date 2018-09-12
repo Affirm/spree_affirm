@@ -52,10 +52,9 @@ module Spree
           amount: -_payment.credit_allowed.to_f,
           order: _payment.order
         )
-        _payment.order.update!({})
+        Spree::OrderUpdater.new(_payment.order).update
 
-        _payment.credit!
-
+        provider.refund(_payment.credit_allowed.to_money.cents, charge_ari)
       end
     end
   end
