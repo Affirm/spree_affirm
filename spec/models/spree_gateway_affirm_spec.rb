@@ -75,9 +75,6 @@ describe Spree::Gateway::Affirm do
           expect(affirm_payment).to receive(:credit!).and_return false
           _payment_amount = affirm_payment.credit_allowed
           affirm_payment.payment_method.cancel affirm_payment.response_code
-
-          expect(affirm_payment.order.adjustments.count).to be > 0
-          expect(affirm_payment.order.adjustments.last.amount).to eq(-_payment_amount)
         end
       end
 
