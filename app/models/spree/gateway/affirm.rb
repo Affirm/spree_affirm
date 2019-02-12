@@ -36,7 +36,7 @@ module Spree
     def cancel(charge_ari)
       _payment = Spree::Payment.valid.where(
         response_code: charge_ari,
-        source_type:   "#{payment_source_class}"
+        source_type:   payment_source_class.to_s
       ).first
 
       return if _payment.nil?
@@ -44,7 +44,7 @@ module Spree
       if _payment.pending?
         _payment.void_transaction!
 
-      elsif _payment.completed? and _payment.can_credit?
+      elsif _payment.completed? && _payment.can_credit?
 
         # create adjustment
         _payment.order.adjustments.create(
@@ -52,10 +52,9 @@ module Spree
             amount: -_payment.credit_allowed.to_f,
             order: _payment.order
         )
-        _payment.order.update!
-
-        _payment.credit!
-
+        Spree::OrderUpdater.new(_payment.order).update
+        provider.refund(_payment.credit_allowed.to_money.cents, charge_ari)
+      
       end
     end
   end
