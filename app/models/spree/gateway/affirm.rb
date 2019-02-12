@@ -43,17 +43,8 @@ module Spree
 
       if _payment.pending?
         _payment.void_transaction!
-
       elsif _payment.completed? && _payment.can_credit?
-
-        # create adjustment
-        #_payment.order.adjustments.create(
-        #    label: "Refund - Canceled Order",
-        #    amount: -_payment.credit_allowed.to_f,
-        #    order: _payment.order
-        #)
-        #Spree::OrderUpdater.new(_payment.order).update
-        return provider.refund(_payment.credit_allowed.to_money.cents, charge_ari)
+        provider.refund(_payment.credit_allowed.to_money.cents, charge_ari)
       end
     end
   end
