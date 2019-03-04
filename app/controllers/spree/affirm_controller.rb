@@ -54,7 +54,7 @@ module Spree
 
       _affirm_payment = order.payments.create!({
         payment_method: payment_method,
-        amount: order.outstanding_balance,
+        amount: order.total,
         source: _affirm_checkout
       })
 
