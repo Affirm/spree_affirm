@@ -20,7 +20,7 @@
         set the shared checkout data
     \*****************************************************/
     affirm.checkout({
-      total:                <%= (@order.total * 100).to_i %>,
+      total:                <%= (@order.outstanding_balance * 100).to_i %>,
       currency:             "USD",
       tax_amount:           <%= (@order.additional_tax_total * 100).to_i %>,
       order_id:             "<%= @order.number %>",
