@@ -91,10 +91,13 @@ module Spree
 
     def generate_spree_address(affirm_address)
       # find the state and country in spree
-      _state    = Spree::State.find_by_abbr(affirm_address["address"]["region1_code"]) or
-                  Spree::State.find_by_name(affirm_address["address"]["region1_code"])
       _country  = Spree::Country.find_by_iso3(affirm_address["address"]["country_code"]) or
                   Spree::Country.find_by_iso(affirm_address["address"]["country_code"])
+
+
+      _state    = Spree::State.find_by(abbr: affirm_address["address"]["region1_code"], country: _country) or
+                  Spree::State.find_by_abbr(affirm_address["address"]["region1_code"]) or
+                  Spree::State.find_by_name(affirm_address["address"]["region1_code"])
 
       # try to get the name from first and last
       _firstname = affirm_address["name"]["first"] if affirm_address["name"]["first"].present?

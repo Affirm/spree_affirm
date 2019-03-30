@@ -48,4 +48,4 @@ Simply add this require statement to your spec_helper:
 require 'spree_affirm/factories'
 ```
 
-Copyright (c) 2018 Affirm, released under the New BSD License
+Copyright (c) 2019 Affirm, released under the New BSD License
