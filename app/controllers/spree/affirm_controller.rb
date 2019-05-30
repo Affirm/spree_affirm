@@ -4,12 +4,8 @@ module Spree
       authorize! :create, Spree::Order
       order = find_current_order || raise(ActiveRecord::RecordNotFound)
 
-      if !params[:checkout_token]
-        return redirect_to checkout_state_path(order.state)
-      end
-
-      if order.complete?
-        return redirect_to completion_route order
+      if !params[:checkout_token] || order.complete?
+        return redirect_to checkout_path
       end
 
       _affirm_checkout = Spree::AffirmCheckout.new(
@@ -55,22 +51,18 @@ module Spree
       # transition to confirm or complete
       while order.next; end
 
-      if order.completed?
-        redirect_to ENV['AFFIRM_COMPLETION_URL'] || completion_route(order)
-      else
-        redirect_to ENV['AFFIRM_CHECKOUT_URL'] || checkout_state_path(order.state)
-      end
+      redirect_to ENV['AFFIRM_CHECKOUT_URL'] || checkout_path
     end
 
     def cancel
       order = find_current_order || raise(ActiveRecord::RecordNotFound)
-      redirect_to checkout_state_path(order.state)
+      redirect_to checkout_path
     end
 
     private
 
-    def checkout_state_path(state)
-      "/checkout/#{state}"
+    def checkout_path
+      "/checkout"
     end
 
     def find_current_order
@@ -83,10 +75,6 @@ module Spree
 
     def provider
       payment_method.provider
-    end
-
-    def completion_route(order)
-      '/checkout/complete'
     end
 
     def generate_spree_address(affirm_address)
