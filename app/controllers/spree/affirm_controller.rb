@@ -1,8 +1,8 @@
 module Spree
   class AffirmController < Spree::Api::BaseController
     def confirm
-      authorize! :create, Spree::Order
       order = find_current_order || raise(ActiveRecord::RecordNotFound)
+      authorize! :update, order, order_token
 
       if !params[:checkout_token] || order.complete?
         return redirect_to checkout_path
@@ -51,22 +51,25 @@ module Spree
       # transition to confirm or complete
       while order.next; end
 
-      redirect_to ENV['AFFIRM_CHECKOUT_URL'] || checkout_path
+      redirect_to checkout_path
     end
 
     def cancel
-      order = find_current_order || raise(ActiveRecord::RecordNotFound)
       redirect_to checkout_path
     end
 
     private
 
-    def checkout_path
-      "/checkout"
+    def find_current_order
+      if current_api_user&.persisted?
+        current_api_user.orders.incomplete.order(:created_at).last
+      elsif order_token
+        Spree::Order.incomplete.where(token: order_token).order(:created_at).last
+      end
     end
 
-    def find_current_order
-      current_api_user ? current_api_user.orders.incomplete.order(:created_at).last : nil
+    def checkout_path
+      ENV['AFFIRM_CHECKOUT_URL'] || '/checkout'
     end
 
     def payment_method
