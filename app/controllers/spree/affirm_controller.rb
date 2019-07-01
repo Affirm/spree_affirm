@@ -4,7 +4,8 @@ module Spree
       order = find_current_order || raise(ActiveRecord::RecordNotFound)
       authorize! :update, order, order_token
 
-      if !params[:checkout_token] || order.complete?
+      # TODO Membership check is specific to our implementation
+      if !params[:checkout_token] || order.membership? || order.complete?
         return redirect_to checkout_path
       end
 
