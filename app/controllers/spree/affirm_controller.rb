@@ -64,6 +64,7 @@ module Spree
     end
 
     def cancel
+      Rollbar.info('[spree_affirm] User canceled on Affirm', order_token: order_token)
       redirect_to checkout_path
     end
 
