@@ -22,6 +22,7 @@ module Spree
 
       # check if data needs to be updated
       unless _affirm_checkout.valid?
+        Rollbar.error('[spree_affirm] Affirm error: Invalid checkout')
 
         _affirm_checkout.errors.each do |field, error|
           Rollbar.error('[spree_affirm] Affirm error', field: field, error: error)
