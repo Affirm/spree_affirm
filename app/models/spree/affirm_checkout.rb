@@ -108,8 +108,9 @@ module Spree
         city:         spree_address.city,
         street1:      spree_address.address1,
         street2:      spree_address.address2,
-        postal_code:  spree_address.zipcode,
         region1_code: spree_address.state.abbr
+        # XXX: Do not check zipcode
+        # Affirm does not work with zip+4 values, but we require them
 
       # check that each value from affirm matches the spree address
       }.each do |affirm_key, spree_val|
