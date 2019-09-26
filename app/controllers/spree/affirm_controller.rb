@@ -5,12 +5,12 @@ module Spree
       authorize! :update, order, order_token
 
       if !params[:checkout_token]
-        Rollbar.warn('[spree_affirm] Invalid order confirmation data', order_token: order_token)
+        logger.warn('[spree_affirm] Invalid order confirmation data. Token: #{order_token}')
         return redirect_to checkout_path
       end
 
       if !order.payment?
-        Rollbar.warn('[spree_affirm] Order was not in the payment state', order_token: order_token)
+        logger.warn('[spree_affirm] Order was not in the payment state. Token: #{order_token}')
         return redirect_to checkout_path
       end
 
@@ -22,10 +22,10 @@ module Spree
 
       # check if data needs to be updated
       unless _affirm_checkout.valid?
-        Rollbar.error('[spree_affirm] Affirm error: Invalid checkout')
+        logger.error('[spree_affirm] Affirm error: Invalid checkout')
 
         _affirm_checkout.errors.each do |field, error|
-          Rollbar.error('[spree_affirm] Affirm error', field: field, error: error)
+          logger.error('[spree_affirm] Affirm error in field #{field}: #{error}')
           case field
           when :billing_address
             # FIXME(brian): pass the phone number to the |order| in a better place
@@ -47,7 +47,7 @@ module Spree
 
         order.save
       else
-        Rollbar.info('[spree_affirm] Valid checkout', order_token: order_token)
+        logger.info('[spree_affirm] Valid checkout. Token: #{order_token}')
       end
 
       _affirm_checkout.save
@@ -65,7 +65,7 @@ module Spree
     end
 
     def cancel
-      Rollbar.info('[spree_affirm] User canceled on Affirm', order_token: order_token)
+      logger.info('[spree_affirm] User canceled on Affirm. Token: #{order_token}')
       redirect_to checkout_path
     end
 
