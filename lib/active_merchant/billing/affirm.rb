@@ -20,16 +20,16 @@ module ActiveMerchant #:nodoc:
         result = commit(:post, "", {"checkout_token"=>affirm_source.token}, options, true)
         return result unless result.success?
 
-        logger.info("[Affirm] amount(money).to_i: #{amount(money).to_i}, result.params[\"amount\"].to_i: #{result.params["amount"].to_i}")
+        ::Rails.logger.info("[Affirm] amount(money).to_i: #{amount(money).to_i}, result.params[\"amount\"].to_i: #{result.params["amount"].to_i}")
 
         if amount(money).to_i != result.params["amount"].to_i
-          logger.error('[spree_affirm] Auth amount does not match charge amount')
+          ::Rails.logger.error('[spree_affirm] Auth amount does not match charge amount')
           return Response.new(false,
                               "Auth amount does not match charge amount",
                               result.params
                              )
         elsif result.params["pending"].to_s != "true"
-          logger.error('[spree_affirm] Error authorizing charge')
+          ::Rails.logger.error('[spree_affirm] Error authorizing charge')
           return Response.new(false,
                               "There was an error authorizing this Charge",
                               result.params
@@ -58,7 +58,7 @@ module ActiveMerchant #:nodoc:
         return result unless result.success?
 
         if amount(money).to_i != result.params["amount"].to_i
-          logger.error('[spree_affirm] Capture amount does not match charge amount')
+          ::Rails.logger.error('[spree_affirm] Capture amount does not match charge amount')
           return Response.new(false,
                 "Capture amount does not match charge amount",
                 result.params
