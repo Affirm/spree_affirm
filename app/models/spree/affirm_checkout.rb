@@ -83,6 +83,7 @@ module Spree
     end
 
     # Indicates whether its possible to void the payment.
+    # NOTE: Currently not possible to void captured payments through the API
     def can_void?(payment)
       !payment.void? && payment.pending? && !payment.response_code.blank?
     end
@@ -91,12 +92,10 @@ module Spree
     # payment be settled first which generally happens within 12-24 hours of the transaction.
     def can_credit?(payment)
       return false unless payment.completed?
-      return false unless payment.order.payment_state == 'credit_owed'
       payment.credit_allowed > 0
     end
 
     private
-
 
     def normalize_affirm_address(affirm_address_details)
       Affirm::AddressValidator.normalize_affirm_address(affirm_address_details)

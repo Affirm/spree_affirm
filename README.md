@@ -1,6 +1,8 @@
 SpreeAffirm
 ===========
 
+https://docs.affirm.com/affirm-developers/reference/introduction
+
 Installation
 ------------
 
