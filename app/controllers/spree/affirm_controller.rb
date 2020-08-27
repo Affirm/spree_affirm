@@ -59,7 +59,7 @@ module Spree
       })
 
       # transition to confirm or complete
-      order.next
+      order.next!
 
       redirect_to checkout_path
     end
