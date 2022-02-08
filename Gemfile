@@ -1,13 +1,13 @@
 source 'https://rubygems.org'
 
-gem 'spree', github: 'spree/spree', tag: 'v0.2.25'
-gem 'spree_gateway', github: 'spree/spree_gateway', tag: 'v0.2.25'
-gem 'spree_auth_devise', github: 'spree/spree_auth_devise', tag: 'v0.2.25'
+gem 'spree', '~> 4.4'
+gem 'spree_gateway', '~> 3.9.4'
+gem 'spree_auth_devise', '~> 4.4.2'
 
 group :test do
   gem 'coffee-rails'
-  gem 'sass-rails', '~> 4.0.3'
-  gem 'money', '6.5.1'
+  gem 'sass-rails', '~> 6.0.0'
+  gem 'money', '6.13'
   gem 'rspec-rails', '~> 2.10'
   gem 'shoulda-matchers', '2.2.0'
   gem 'simplecov', :require => false
