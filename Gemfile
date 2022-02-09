@@ -8,8 +8,8 @@ group :test do
   gem 'coffee-rails'
   gem 'sass-rails', '~> 6.0.0'
   gem 'money', '6.13'
-  gem 'rspec-rails', '~> 2.10'
-  gem 'shoulda-matchers', '2.2.0'
+  gem 'rspec-rails', '~> 5.1.0'
+  gem 'shoulda-matchers', '5.1.0'
   gem 'simplecov', :require => false
   gem 'simplecov-rcov'
   gem 'database_cleaner'

@@ -8,15 +8,14 @@ Gem::Specification.new do |s|
   s.version     = SpreeAffirm::VERSION
   s.summary     = 'Affirm Spree Payment Gateway'
   s.description = 'Affirm payment Gateway for Spree'
-  s.required_ruby_version = '>= 1.9.3'
+  s.required_ruby_version = '>= 3.0.3'
 
   s.author    = 'Affirm'
   s.email     = 'mts@affirm.com'
   s.homepage  = 'http://www.affirm.com'
 
-  s.files       = `git ls-files`.split("\n")
-  s.test_files  = `git ls-files -- {test,spec,features}/*`.split("\n")
-  s.require_path = 'lib'
+  s.files       = Dir['README.md', 'lib/**/*', 'spree_affirm.gemspec']
+  s.require_paths = ['lib']
   s.requirements << 'none'
 
   s.add_dependency 'spree_core', '>= 4.4.0'
