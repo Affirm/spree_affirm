@@ -1,4 +1,4 @@
-class CreateAffirmCheckout < ActiveRecord::Migration[6.2]
+class CreateAffirmCheckout < ActiveRecord::Migration
   def change
     create_table :spree_affirm_checkouts do |t|
       t.string     :token

@@ -130,7 +130,7 @@
           
           if($( this )[0].innerText === "Affirm"){
 
-           $( this )[0].lastChild.data = "Affirm Monthly Payments";
+           $( this )[0].lastChild.data = "Affirm Pay over time";
           }
         });
 
@@ -173,7 +173,7 @@
       \*****************************************************/
       $(document).on('click', '#checkout_form_payment'
         , function (event) {
-          if($('div[data-hook="checkout_payment_step"] input[type="radio"]:checked')[0].parentNode.outerText === "Affirm Monthly Payments") $('.payment-sources').hide();
+          if($('div[data-hook="checkout_payment_step"] input[type="radio"]:checked')[0].parentNode.outerText === "Affirm Pay over time") $('.payment-sources').hide();
         }
       )
     });
