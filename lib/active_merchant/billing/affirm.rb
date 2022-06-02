@@ -1,5 +1,6 @@
 module ActiveMerchant #:nodoc:
   module Billing #:nodoc:
+    # [wipn] throwaway comment for git purpouses
     class Affirm < Gateway
       self.supported_countries = %w(US)
       self.default_currency = 'USD'
