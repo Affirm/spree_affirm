@@ -83,6 +83,7 @@ module Spree
     end
 
     # Indicates whether its possible to void the payment.
+    # [wipn] has this changed?
     # NOTE: Currently not possible to void captured payments through the API
     def can_void?(payment)
       !payment.void? && payment.pending? && !payment.response_code.blank?

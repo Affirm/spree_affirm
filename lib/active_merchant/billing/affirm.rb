@@ -12,12 +12,13 @@ module ActiveMerchant #:nodoc:
           super
       end
 
-      def set_charge(charge_id)
-          @charge_id = charge_id
+      def set_transaction(transaction_id)
+          @transaction_id = transaction_id
       end
 
       def authorize(money, affirm_source, options = {})
-        result = commit(:post, "", {"checkout_token"=>affirm_source.token}, options, true)
+        # [wipn] has affirm_source.token changed?
+        result = commit(:post, "", {"transaction_id"=>affirm_source.token}, options, true)
         return result unless result.success?
 
         ::Rails.logger.info("[Affirm] amount(money).to_i: #{amount(money).to_i}, result.params[\"amount\"].to_i: #{result.params["amount"].to_i}")
@@ -48,13 +49,13 @@ module ActiveMerchant #:nodoc:
       def purchase(money, affirm_source, options = {})
           result = authorize(money, affirm_source, options)
           return result unless result.success?
-          capture(money, @charge_id, options)
+          capture(money, @transaction_id, options)
       end
 
       def capture(money, charge_source, options = {})
         post = {:amount => amount(money)}
-        set_charge(charge_source)
-        result = commit(:post, "#{@charge_id}/capture", post, options)
+        set_transaction(charge_source)
+        result = commit(:post, "#{@transaction_id}/capture", post, options)
         return result unless result.success?
 
         if amount(money).to_i != result.params["amount"].to_i
@@ -68,28 +69,28 @@ module ActiveMerchant #:nodoc:
       end
 
       def void(charge_source, options = {})
-        set_charge(charge_source)
-        commit(:post, "#{@charge_id}/void", {}, options)
+        set_transaction(charge_source)
+        commit(:post, "#{@transaction_id}/void", {}, options)
       end
 
       def refund(money, charge_source, options = {})
         post = {:amount => amount(money)}
-        set_charge(charge_source)
-        commit(:post, "#{@charge_id}/refund", post, options)
+        set_transaction(charge_source)
+        commit(:post, "#{@transaction_id}/refund", post, options)
       end
 
       def credit(money, charge_source, options = {})
-          set_charge(charge_source)
+          set_transaction(charge_source)
           return Response.new(true ,
                        "Credited Zero amount",
                        {},
-                       :authorization => @charge_id,
+                       :authorization => @transaction_id,
                       ) unless money > 0
           refund(money, charge_source, options)
       end
 
       def root_url
-        "#{root_api_url}charges/"
+        "#{root_api_url}transactions/"
       end
 
       def root_api_url
@@ -100,7 +101,7 @@ module ActiveMerchant #:nodoc:
           {
               "Content-Type" => "application/json",
               "Authorization" => "Basic " + Base64.encode64(@api_key.to_s + ":" + @secret_key.to_s).gsub(/\n/, '').strip,
-              "User-Agent" => "Affirm/v1 ActiveMerchantBindings",
+              "User-Agent" => "Affirm/v2 ActiveMerchantBindings",
           }
       end
 
@@ -131,8 +132,8 @@ module ActiveMerchant #:nodoc:
         }
       end
 
-      def get_checkout(checkout_token)
-        _url           = root_api_url + "checkout/#{checkout_token}"
+      def get_checkout(transaction_id)
+        _url           = root_api_url + "checkout/#{transaction_id}"
         _raw_response  = ssl_request :get, _url, nil, headers
 
         parse(_raw_response)
@@ -153,12 +154,12 @@ module ActiveMerchant #:nodoc:
           end
 
           if success && ret_charge
-              @charge_id = response["id"]
+              @transaction_id = response["id"]
           end
           Response.new(success,
                        success ? "Transaction approved" : response["message"],
                        response,
-                       :authorization => @charge_id,
+                       :authorization => @transaction_id,
                       )
       end
     end
