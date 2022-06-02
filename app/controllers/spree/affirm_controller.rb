@@ -4,7 +4,7 @@ module Spree
       order = find_current_order || raise(ActiveRecord::RecordNotFound)
       authorize! :update, order, order_token
 
-      if !params[:checkout_token]
+      if !params[:transaction_id]
         ::Rails.logger.warn('[spree_affirm] Invalid order confirmation data. Token: #{order_token}')
         return redirect_to checkout_path
       end
@@ -16,7 +16,7 @@ module Spree
 
       _affirm_checkout = Spree::AffirmCheckout.new(
         order: order,
-        token: params[:checkout_token],
+        token: params[:transaction_id],
         payment_method: payment_method
       )
 

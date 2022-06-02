@@ -11,7 +11,8 @@ describe Spree::AffirmController do
   describe "POST confirm" do
 
     def post_request(token, payment_id)
-      post :confirm, checkout_token: token, payment_method_id: payment_id, use_route: 'spree'
+      # [wipn] check this against the solidus gems to see what sort of arguments are being sent to this local callback controller
+      post :confirm, transaction_id: token, payment_method_id: payment_id, use_route: 'spree'
     end
 
     before do
@@ -25,7 +26,7 @@ describe Spree::AffirmController do
         controller.stub current_order: checkout.order
       end
 
-      context "when no checkout_token is provided" do
+      context "when no transaction_id is provided" do
         it "redirects to the current order state" do
           post_request(nil, nil)
           expect(response).to redirect_to(controller.checkout_state_path(checkout.order.state))
