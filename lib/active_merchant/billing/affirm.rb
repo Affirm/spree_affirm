@@ -5,6 +5,7 @@ module ActiveMerchant #:nodoc:
       self.default_currency = 'USD'
       self.money_format = :cents
 
+      # [wipn] START HERE - this and the callback controller is what needs to be updated to interact with the transactions API.  The iframe checkout flow is irrelevant
       def initialize(options = {})
           requires!(options, :api_key, :secret_key, :server)
           @api_key = options[:api_key]
