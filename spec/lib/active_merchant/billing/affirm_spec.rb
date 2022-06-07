@@ -64,8 +64,8 @@ describe ActiveMerchant::Billing::Affirm do
 
 
   describe "#authorize" do
-    it "sends a POST to /api/v2/transactions/ with the transaction_id" do
-      expect_post_and_return_success(/\/api\/v2\/transactions/, {transaction_id: affirm_payment.source.token}, {amount: 8000})
+    it "sends a POST to /api/v1/transactions/ with the transaction_id" do
+      expect_post_and_return_success(/\/api\/v1\/transactions/, {transaction_id: affirm_payment.source.token}, {amount: 8000})
       affirm_payment.payment_method.provider.authorize(8000, affirm_payment.source)
     end
 
@@ -83,7 +83,7 @@ describe ActiveMerchant::Billing::Affirm do
     context "when the POST respone is successful" do
       context "when the auth amount does not match the given amount" do
         it "returns an error response for that error" do
-          expect_post_and_return_success(/\/api\/v2\/transactions/, {transaction_id: affirm_payment.source.token}, {amount: 9000})
+          expect_post_and_return_success(/\/api\/v1\/transactions/, {transaction_id: affirm_payment.source.token}, {amount: 9000})
           result = affirm_payment.payment_method.provider.authorize(1999, affirm_payment.source)
           expect(result.success?).to be(false)
           expect(result.message).to eq("Auth amount does not match charge amount")
@@ -93,7 +93,7 @@ describe ActiveMerchant::Billing::Affirm do
 
       context "when the charge is not pending in the response" do
         it "returns an error response for that error" do
-          expect_post_and_return_success(/\/api\/v2\/transactions/, {transaction_id: affirm_payment.source.token}, {amount: 9000, pending: false})
+          expect_post_and_return_success(/\/api\/v1\/transactions/, {transaction_id: affirm_payment.source.token}, {amount: 9000, pending: false})
           result = affirm_payment.payment_method.provider.authorize(9000, affirm_payment.source)
           expect(result.success?).to be(false)
           expect(result.message).to eq("There was an error authorizing this Charge")
@@ -102,7 +102,7 @@ describe ActiveMerchant::Billing::Affirm do
 
 
       it "returns the result from the POST" do
-        expect_post_and_return_success(/\/api\/v2\/transactions/, {transaction_id: affirm_payment.source.token}, {amount: 9000})
+        expect_post_and_return_success(/\/api\/v1\/transactions/, {transaction_id: affirm_payment.source.token}, {amount: 9000})
         result = affirm_payment.payment_method.provider.authorize(9000, affirm_payment.source)
         expect(result.success?).to be(true)
         expect(result.params['amount']).to eq(9000)
@@ -114,14 +114,14 @@ describe ActiveMerchant::Billing::Affirm do
 
   describe "#purchase" do
     it "authorizes the charge" do
-      expect_post_and_return_failure(/\/api\/v2\/transactions/, {transaction_id: affirm_payment.source.token})
+      expect_post_and_return_failure(/\/api\/v1\/transactions/, {transaction_id: affirm_payment.source.token})
       affirm_payment.payment_method.provider.purchase(8000, affirm_payment.source)
     end
 
 
     context "when the authorize response is not successful" do
       it "returns the response of the auth response" do
-        expect_post_and_return_failure(/\/api\/v2\/transactions/, {transaction_id: affirm_payment.source.token})
+        expect_post_and_return_failure(/\/api\/v1\/transactions/, {transaction_id: affirm_payment.source.token})
         purchase_result = affirm_payment.payment_method.provider.purchase(8000, affirm_payment.source)
         auth_result     = affirm_payment.payment_method.provider.authorize(8000, affirm_payment.source)
 
@@ -132,7 +132,7 @@ describe ActiveMerchant::Billing::Affirm do
 
 
       it "does not attempt to capture the charge" do
-        expect_post_and_return_failure(/\/api\/v2\/transactions/, {transaction_id: affirm_payment.source.token})
+        expect_post_and_return_failure(/\/api\/v1\/transactions/, {transaction_id: affirm_payment.source.token})
         affirm_payment.payment_method.provider.should_not_receive(:capture)
         affirm_payment.payment_method.provider.purchase(8000, affirm_payment.source)
       end
@@ -141,7 +141,7 @@ describe ActiveMerchant::Billing::Affirm do
 
     context "when the authorize response is successful" do
       it "captures the charge" do
-        expect_post_and_return_success(/\/api\/v2\/transactions/, {transaction_id: affirm_payment.source.token})
+        expect_post_and_return_success(/\/api\/v1\/transactions/, {transaction_id: affirm_payment.source.token})
         affirm_payment.payment_method.provider.should_receive(:capture)
         affirm_payment.payment_method.provider.purchase(8000, affirm_payment.source)
       end
@@ -153,13 +153,13 @@ describe ActiveMerchant::Billing::Affirm do
 
   describe "#capture" do
     it "calls a POST to transactions/[charge_ari]/capture" do
-      expect_post_and_return_success(/\/api\/v2\/transactions\/#{transaction_id}\/capture/, {amount: "8000"})
+      expect_post_and_return_success(/\/api\/v1\/transactions\/#{transaction_id}\/capture/, {amount: "8000"})
       affirm_payment.payment_method.provider.capture(8000, transaction_id)
     end
 
     context "when the capture response is not successful" do
       it "returns the response" do
-        expect_post_and_return_failure(/\/api\/v2\/transactions\/#{transaction_id}\/capture/, {amount: "8000"},
+        expect_post_and_return_failure(/\/api\/v1\/transactions\/#{transaction_id}\/capture/, {amount: "8000"},
           message: "buuuuuusted"
         )
         result = affirm_payment.payment_method.provider.capture(8000, transaction_id)
@@ -171,7 +171,7 @@ describe ActiveMerchant::Billing::Affirm do
 
     context "when the capture response is successful" do
       it "returns the response" do
-        expect_post_and_return_success(/\/api\/v2\/transactions\/#{transaction_id}\/capture/, {amount: "8000"},
+        expect_post_and_return_success(/\/api\/v1\/transactions\/#{transaction_id}\/capture/, {amount: "8000"},
           amount: 8000
         )
         result = affirm_payment.payment_method.provider.capture(8000, transaction_id)
@@ -182,7 +182,7 @@ describe ActiveMerchant::Billing::Affirm do
 
       context "when the captured amount does not equal the requested amount" do
         it "returns a failed response" do
-          expect_post_and_return_success(/\/api\/v2\/transactions\/#{transaction_id}\/capture/, {amount: "8000"},
+          expect_post_and_return_success(/\/api\/v1\/transactions\/#{transaction_id}\/capture/, {amount: "8000"},
             amount: 299
           )
           result = affirm_payment.payment_method.provider.capture(8000, transaction_id)
@@ -197,13 +197,13 @@ describe ActiveMerchant::Billing::Affirm do
 
   describe "#void" do
     it "calls POST on /transactions/[charge_ari]/void" do
-      expect_post_and_return_success(/\/api\/v2\/transactions\/#{transaction_id}\/void/)
+      expect_post_and_return_success(/\/api\/v1\/transactions\/#{transaction_id}\/void/)
       affirm_payment.payment_method.provider.void(transaction_id)
     end
 
 
     it "returns the response from the POST request" do
-      expect_post_and_return_success(/\/api\/v2\/transactions\/#{transaction_id}\/void/)
+      expect_post_and_return_success(/\/api\/v1\/transactions\/#{transaction_id}\/void/)
       result = affirm_payment.payment_method.provider.void(transaction_id)
       expect(result.success?).to be(true)
       expect(result.message).to eq("Transaction approved")
@@ -214,13 +214,13 @@ describe ActiveMerchant::Billing::Affirm do
 
   describe "#refund" do
     it "calls POST on /transactions/[charge_ari]/refund" do
-      expect_post_and_return_success(/\/api\/v2\/transactions\/#{transaction_id}\/refund/, {amount: "8000"})
+      expect_post_and_return_success(/\/api\/v1\/transactions\/#{transaction_id}\/refund/, {amount: "8000"})
       affirm_payment.payment_method.provider.refund(8000, transaction_id)
     end
 
 
     it "returns the response from the POST request" do
-      expect_post_and_return_success(/\/api\/v2\/transactions\/#{transaction_id}\/refund/, {amount: "8000"})
+      expect_post_and_return_success(/\/api\/v1\/transactions\/#{transaction_id}\/refund/, {amount: "8000"})
       result = affirm_payment.payment_method.provider.refund(8000, transaction_id)
       expect(result.success?).to be(true)
       expect(result.message).to eq("Transaction approved")

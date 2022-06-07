@@ -50,7 +50,6 @@ module Spree
         ::Rails.logger.info('[spree_affirm] Valid checkout. Token: #{order_token}')
       end
 
-      # [wipn] this is really where i need to hit the transaction API
       _affirm_checkout.save
 
       _affirm_payment = order.payments.create!({
