@@ -18,8 +18,7 @@ module ActiveMerchant #:nodoc:
       end
 
       def authorize(money, affirm_source, options = {})
-        # [wipn] has affirm_source.token changed?
-        result = commit(:post, "", {"checkout_token"=>affirm_source.token}, options, true)
+        result = commit(:post, "", {"transction_id"=>affirm_source.token}, options, true)
         return result unless result.success?
 
         ::Rails.logger.info("[Affirm] amount(money).to_i: #{amount(money).to_i}, result.params[\"amount\"].to_i: #{result.params["amount"].to_i}")
@@ -91,11 +90,11 @@ module ActiveMerchant #:nodoc:
       end
 
       def root_url
-        "#{root_api_url}transactions/"
+        "#{root_api_url}/api/v1/transactions/"
       end
 
       def root_api_url
-        "https://#{@options[:server]}/api/v2/"
+        "https://#{@options[:server]}"
       end
 
       def headers
@@ -134,8 +133,7 @@ module ActiveMerchant #:nodoc:
       end
 
       def get_checkout(checkout_token)
-        # [wipn] checkout endpoint, see if this still expects a checkout token or a transaction id
-        _url           = root_api_url + "checkout/#{checkout_token}"
+        _url           = root_api_url + "/api/v2/checkout/#{checkout_token}"
         _raw_response  = ssl_request :get, _url, nil, headers
 
         parse(_raw_response)
@@ -158,6 +156,7 @@ module ActiveMerchant #:nodoc:
           if success && ret_charge
               @transaction_id = response["id"]
           end
+          # [wipn] this seems like it's fine?
           Response.new(success,
                        success ? "Transaction approved" : response["message"],
                        response,

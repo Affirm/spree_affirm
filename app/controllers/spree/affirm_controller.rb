@@ -4,7 +4,7 @@ module Spree
       order = find_current_order || raise(ActiveRecord::RecordNotFound)
       authorize! :update, order, order_token
 
-      if !params[:transaction_id]
+      if !params[:checkout_token]
         ::Rails.logger.warn('[spree_affirm] Invalid order confirmation data. Token: #{order_token}')
         return redirect_to checkout_path
       end
@@ -16,7 +16,7 @@ module Spree
 
       _affirm_checkout = Spree::AffirmCheckout.new(
         order: order,
-        token: params[:transaction_id],
+        token: params[:checkout_token],
         payment_method: payment_method
       )
 
@@ -50,6 +50,7 @@ module Spree
         ::Rails.logger.info('[spree_affirm] Valid checkout. Token: #{order_token}')
       end
 
+      # [wipn] this is really where i need to hit the transaction API
       _affirm_checkout.save
 
       _affirm_payment = order.payments.create!({
