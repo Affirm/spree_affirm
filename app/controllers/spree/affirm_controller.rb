@@ -14,6 +14,9 @@ module Spree
         return redirect_to checkout_path
       end
 
+      # [wipn] i belive these arguments are serialized and sent to the endpoint, so if there is
+      # somewhere to update what I'm sending, this would be the place.  if this fails to hit the
+      # transaction ID, then I have a good indication that I can update these
       _affirm_checkout = Spree::AffirmCheckout.new(
         order: order,
         token: params[:checkout_token],
