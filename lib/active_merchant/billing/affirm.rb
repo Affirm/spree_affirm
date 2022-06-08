@@ -89,7 +89,10 @@ module ActiveMerchant #:nodoc:
       end
 
       def root_url
-        "#{root_api_url}/api/v1/transactions/"
+        # [wipn] remove, just for testing
+        "#{root_api_url}/api/v2/charges/"
+        # [wipn] keep
+        # "#{root_api_url}/api/v1/transactions/"
       end
 
       def root_api_url
