@@ -1,70 +1,87 @@
 module Spree
   class AffirmController < Spree::Api::BaseController
     def confirm
-      order = find_current_order || raise(ActiveRecord::RecordNotFound)
-      authorize! :update, order, order_token
+      puts "******* WIPN *********"
+      puts "******* WIPN *********"
+      puts "******* WIPN *********"
+      puts "******* WIPN *********"
+      puts "******* WIPN *********"
+      puts "******* WIPN *********"
+      puts " params:   \n"
+      puts "#{params.to_h}\n"
+      puts "******* WIPN *********"
+      puts "******* WIPN *********"
+      puts "******* WIPN *********"
+      puts "******* WIPN *********"
+      puts "******* WIPN *********"
+      puts "******* WIPN *********"
+      puts "******* WIPN *********"
 
-      if !params[:checkout_token]
-        ::Rails.logger.warn('[spree_affirm] Invalid order confirmation data. Token: #{order_token}')
-        return redirect_to checkout_path
-      end
-
-      if !order.payment?
-        ::Rails.logger.warn('[spree_affirm] Order was not in the payment state. Token: #{order_token}')
-        return redirect_to checkout_path
-      end
-
-      # [wipn] i belive these arguments are serialized and sent to the endpoint, so if there is
-      # somewhere to update what I'm sending, this would be the place.  if this fails to hit the
-      # transaction ID, then I have a good indication that I can update these
-      _affirm_checkout = Spree::AffirmCheckout.new(
-        order: order,
-        token: params[:checkout_token],
-        payment_method: payment_method
-      )
-
-      # check if data needs to be updated
-      unless _affirm_checkout.valid?
-        ::Rails.logger.error('[spree_affirm] Affirm error: Invalid checkout')
-
-        _affirm_checkout.errors.each do |field, error|
-          ::Rails.logger.error('[spree_affirm] Affirm error in field #{field}: #{error}')
-          case field
-          when :billing_address
-            # FIXME(brian): pass the phone number to the |order| in a better place
-            phone = order.bill_address.phone
-            order.bill_address = generate_spree_address(_affirm_checkout.details['billing'])
-            order.bill_address.phone = phone
-
-          when :shipping_address
-            # FIXME(brian): pass the phone number to the |order| in a better place
-            phone = order.shipping_address.phone
-            order.ship_address = generate_spree_address(_affirm_checkout.details['shipping'])
-            order.ship_address.phone = phone
-
-          when :billing_email
-            order.email = _affirm_checkout.details['billing']['email']
-
-          end
-        end
-
-        order.save
-      else
-        ::Rails.logger.info('[spree_affirm] Valid checkout. Token: #{order_token}')
-      end
-
-      _affirm_checkout.save
-
-      _affirm_payment = order.payments.create!({
-        payment_method: payment_method,
-        amount: order.total,
-        source: _affirm_checkout
-      })
-
-      # transition to confirm or complete
-      order.next!
-
-      redirect_to checkout_path
+      raise "wipn - made it to confirm with params: #{params.to_h}"
+      # order = find_current_order || raise(ActiveRecord::RecordNotFound)
+      # authorize! :update, order, order_token
+      #
+      # if !params[:checkout_token]
+      #   ::Rails.logger.warn('[spree_affirm] Invalid order confirmation data. Token: #{order_token}')
+      #   return redirect_to checkout_path
+      # end
+      #
+      # if !order.payment?
+      #   ::Rails.logger.warn('[spree_affirm] Order was not in the payment state. Token: #{order_token}')
+      #   return redirect_to checkout_path
+      # end
+      #
+      # # [wipn] i belive these arguments are serialized and sent to the endpoint, so if there is
+      # # somewhere to update what I'm sending, this would be the place.  if this fails to hit the
+      # # transaction ID, then I have a good indication that I can update these
+      # _affirm_checkout = Spree::AffirmCheckout.new(
+      #   order: order,
+      #   token: params[:checkout_token],
+      #   payment_method: payment_method
+      # )
+      #
+      # # check if data needs to be updated
+      # unless _affirm_checkout.valid?
+      #   ::Rails.logger.error('[spree_affirm] Affirm error: Invalid checkout')
+      #
+      #   _affirm_checkout.errors.each do |field, error|
+      #     ::Rails.logger.error('[spree_affirm] Affirm error in field #{field}: #{error}')
+      #     case field
+      #     when :billing_address
+      #       # FIXME(brian): pass the phone number to the |order| in a better place
+      #       phone = order.bill_address.phone
+      #       order.bill_address = generate_spree_address(_affirm_checkout.details['billing'])
+      #       order.bill_address.phone = phone
+      #
+      #     when :shipping_address
+      #       # FIXME(brian): pass the phone number to the |order| in a better place
+      #       phone = order.shipping_address.phone
+      #       order.ship_address = generate_spree_address(_affirm_checkout.details['shipping'])
+      #       order.ship_address.phone = phone
+      #
+      #     when :billing_email
+      #       order.email = _affirm_checkout.details['billing']['email']
+      #
+      #     end
+      #   end
+      #
+      #   order.save
+      # else
+      #   ::Rails.logger.info('[spree_affirm] Valid checkout. Token: #{order_token}')
+      # end
+      #
+      # _affirm_checkout.save
+      #
+      # _affirm_payment = order.payments.create!({
+      #   payment_method: payment_method,
+      #   amount: order.total,
+      #   source: _affirm_checkout
+      # })
+      #
+      # # transition to confirm or complete
+      # order.next!
+      #
+      # redirect_to checkout_path
     end
 
     def cancel
