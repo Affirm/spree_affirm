@@ -17,7 +17,10 @@ module ActiveMerchant #:nodoc:
       end
 
       def authorize(money, affirm_source, options = {})
-        result = commit(:post, "", {"transction_id"=>affirm_source.token}, options, true)
+        # [wipn] keep
+        # result = commit(:post, "", {"transction_id"=>affirm_source.token}, options, true)
+        # [wipn] remove, original
+        result = commit(:post, "", {"checkout_token"=>affirm_source.token}, options, true)
         return result unless result.success?
 
         ::Rails.logger.info("[Affirm] amount(money).to_i: #{amount(money).to_i}, result.params[\"amount\"].to_i: #{result.params["amount"].to_i}")
