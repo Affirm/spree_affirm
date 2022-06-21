@@ -17,7 +17,8 @@ module ActiveMerchant #:nodoc:
       end
 
       def authorize(money, affirm_source, options = {})
-        result = commit(:post, "", {"checkout_token"=>affirm_source.token}, options, true)
+        result = commit(:post, "", {'transaction_id'=>affirm_source.token}, options, true)
+
         return result unless result.success?
 
         ::Rails.logger.info("[Affirm] amount(money).to_i: #{amount(money).to_i}, result.params[\"amount\"].to_i: #{result.params["amount"].to_i}")
@@ -28,7 +29,7 @@ module ActiveMerchant #:nodoc:
                               "Auth amount does not match charge amount",
                               result.params
                              )
-        elsif result.params["pending"].to_s != "true"
+        elsif result.params['status'].to_s != "authorized"
           ::Rails.logger.error('[spree_affirm] Error authorizing charge')
           return Response.new(false,
                               "There was an error authorizing this Charge",
@@ -52,9 +53,10 @@ module ActiveMerchant #:nodoc:
       end
 
       def capture(money, charge_source, options = {})
-        post = {:amount => amount(money)}
+        post = {:amount => amount(money).to_i}
         set_charge(charge_source)
-        result = commit(:post, "#{@charge_id}/capture", post, options)
+        result = commit(:post, "/#{@charge_id}/capture", post, options)
+
         return result unless result.success?
 
         if amount(money).to_i != result.params["amount"].to_i
@@ -69,13 +71,13 @@ module ActiveMerchant #:nodoc:
 
       def void(charge_source, options = {})
         set_charge(charge_source)
-        commit(:post, "#{@charge_id}/void", {}, options)
+        commit(:post, "/#{@charge_id}/void", {}, options)
       end
 
       def refund(money, charge_source, options = {})
         post = {:amount => amount(money)}
         set_charge(charge_source)
-        commit(:post, "#{@charge_id}/refund", post, options)
+        commit(:post, "/#{@charge_id}/refund", post, options)
       end
 
       def credit(money, charge_source, options = {})
@@ -89,11 +91,11 @@ module ActiveMerchant #:nodoc:
       end
 
       def root_url
-        "#{root_api_url}charges/"
+        "#{root_api_url}/api/v1/transactions"
       end
 
       def root_api_url
-        "https://#{@options[:server]}/api/v2/"
+        "https://#{@options[:server]}"
       end
 
       def headers
@@ -132,7 +134,7 @@ module ActiveMerchant #:nodoc:
       end
 
       def get_checkout(checkout_token)
-        _url           = root_api_url + "checkout/#{checkout_token}"
+        _url           = root_api_url + "/api/v2/checkout/#{checkout_token}"
         _raw_response  = ssl_request :get, _url, nil, headers
 
         parse(_raw_response)
@@ -141,6 +143,7 @@ module ActiveMerchant #:nodoc:
       def commit(method, url, parameters=nil, options = {}, ret_charge=false)
           raw_response = response = nil
           success = false
+
           begin
               raw_response = ssl_request(method, root_url + url, post_data(parameters), headers)
               response = parse(raw_response)
