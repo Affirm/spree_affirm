@@ -1,8 +1,8 @@
 module ActiveMerchant #:nodoc:
   module Billing #:nodoc:
     class Affirm < Gateway
-      self.supported_countries = %w(US CA)
-      self.default_currency = ENV.fetch('DEFAULT_CURRENCY')
+      self.supported_countries = %w(US)
+      self.default_currency = 'USD'
       self.money_format = :cents
 
       def initialize(options = {})
