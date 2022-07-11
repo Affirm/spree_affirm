@@ -75,7 +75,7 @@ module ActiveMerchant #:nodoc:
       end
 
       def refund(money, charge_source, options = {})
-        post = {:amount => amount(money)}
+        post = {:amount => amount(money).to_i}
         set_charge(charge_source)
         commit(:post, "/#{@charge_id}/refund", post, options)
       end
