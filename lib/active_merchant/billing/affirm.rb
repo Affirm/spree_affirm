@@ -103,6 +103,7 @@ module ActiveMerchant #:nodoc:
               "Content-Type" => "application/json",
               "Authorization" => "Basic " + Base64.encode64(@api_key.to_s + ":" + @secret_key.to_s).gsub(/\n/, '').strip,
               "User-Agent" => "Affirm/v1 ActiveMerchantBindings",
+              "country-code" => country_code
           }
       end
 
@@ -134,7 +135,7 @@ module ActiveMerchant #:nodoc:
       end
 
       def get_checkout(checkout_token)
-        _url           = root_api_url + "/api/v2/checkout/#{checkout_token}"
+        _url           = root_api_url + "/api/v1/transactions/#{checkout_token}"
         _raw_response  = ssl_request :get, _url, nil, headers
 
         parse(_raw_response)
@@ -163,6 +164,14 @@ module ActiveMerchant #:nodoc:
                        response,
                        :authorization => @charge_id,
                       )
+      end
+
+      def country_code
+        code = ENV['COUNTRY_CODE'] || 'US'
+        if code == 'US' return 'USA'
+        if code == 'CA' return 'CAN'
+
+        return USA
       end
     end
   end
